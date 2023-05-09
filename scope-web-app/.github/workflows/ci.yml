@@ -1,8 +1,11 @@
-name: Foodie Web App
+name: Scope Web App
 
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
+  push:
+    branches:
+      - main
 
 jobs:
   linting:
