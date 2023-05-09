@@ -3,6 +3,6 @@ Scope is a web app that allows users to discover and learn about music artists, 
 
 # Tech Stack
 HTML | 
-CSS/SASS | 
+CSS/SCSS | 
 Typescript | 
 React | 
