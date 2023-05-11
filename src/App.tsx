@@ -1,11 +1,10 @@
+import LandingPage from "./components/pages/LandingPage/LandingPage";
 import "./styles/global-styles.scss";
 
 function App() {
   return (
     <>
-      <div>
-        <h1>Scope.</h1>
-      </div>
+      <LandingPage />
     </>
   );
 }

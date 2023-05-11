@@ -1,0 +1,31 @@
+@import "../../../styles/variables.scss";
+
+/* Navbar Wrapper */
+#nav_items {
+  background-color: green;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-height: 50px;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  z-index: 9999;
+  padding: 20px 0 10px 40px;
+  flex-direction: row;
+  gap: 10px;
+
+  /* Navbar Logo */
+  & > img {
+    height: 40px;
+    aspect-ratio: 1;
+  }
+
+  /* Navbar Brand Text */
+  & > a {
+    font-size: 24px;
+    text-decoration: none;
+    color: black;
+    font-weight: 600;
+  }
+}

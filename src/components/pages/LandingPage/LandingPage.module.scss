@@ -1,0 +1,29 @@
+#main_wrapper {
+  margin-top: 70px;
+  background-color: blue;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#content_wrapper {
+  background-color: red;
+  display: flex;
+  flex-direction: row;
+  height: 90%;
+}
+
+footer {
+  background-color: purple;
+  height: 10%;
+}
+
+.info_section {
+  background-color: yellow;
+  width: 50%;
+}
+
+.hero_image_section {
+  background-color: orange;
+  width: 50%;
+}
