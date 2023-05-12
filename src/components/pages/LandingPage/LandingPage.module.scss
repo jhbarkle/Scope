@@ -1,25 +1,26 @@
 #main_wrapper {
-  margin-top: 60px;
-  background-color: white;
-  height: 93vh;
+  background-color: red;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  min-width: 100vw;
 }
 
 #content_wrapper {
-  background-color: red;
+  background-color: lightblue;
   display: flex;
   flex-direction: row;
-  height: 90%;
+  min-height: 95vh;
 }
 
 footer {
   background-color: white;
-  height: 9%;
+  min-height: 5vh;
   display: flex;
   justify-content: center;
-  align-items: end;
+  align-items: center;
   font-weight: 600;
+  width: 100vw;
 }
 
 .info_section {
@@ -37,20 +38,26 @@ footer {
   display: flex;
   flex-direction: column;
   padding: 50px;
+  padding-top: 150px;
   padding-left: 150px;
   justify-content: center;
   gap: 10px;
+
+  & > * {
+    border: 1px solid black;
+    max-width: fit-content;
+  }
 }
 
 #header_text {
-  font-size: 80px;
+  font-size: 6vw;
   font-weight: 700;
   margin: 0;
   width: 630px;
 }
 
 #header_subtext {
-  font-size: 24px;
+  font-size: 2vw;
   font-weight: 500;
   color: darkgray;
   width: 640px;
@@ -77,18 +84,19 @@ footer {
   }
 
   & > p {
-    font-size: 18px;
+    font-size: 1.2vw;
   }
 }
 #login_link > button {
   background-color: #16a085;
   border: none;
   padding: 30px 50px;
-  font-size: 25px;
+  font-size: 1.5vw;
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s ease-in-out;
   color: white;
+  width: fit-content;
 
   &:hover {
     background-color: #22dbb6;
@@ -106,13 +114,54 @@ footer {
 /*********** Media Queries *************/
 
 /* Screen Size Smaller than 1200px */
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1250px) {
+  .hero_image_section {
+    display: none;
+  }
+
+  .info_section {
+    background-image: url("icons/landing-page-image.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: brightness(70%);
+  }
+
+  .info_section {
+    width: 100%;
+  }
+
+  // #content_wrapper {
+  //   background-color: white;
+  //   display: flex;
+  //   flex-direction: column;
+  //   height: auto;
+  // }
+
+  // #main_wrapper {
+  //   margin-top: 80px;
+  //   background-color: white;
+  //   height: 93vh;
+  //   display: flex;
+  //   flex-direction: column;
+  // }
 }
 
 /* Screen Size Smaller than 900px */
 @media only screen and (max-width: 900px) {
+  // .info_section {
+  //   padding-top: 150px;
+  //   padding-left: 50px;
+  // }
 }
 
 /* Screen Size Smaller than 600px */
 @media only screen and (max-width: 600px) {
+  // .info_section {
+  //   height: 80vh;
+  // }
+
+  // footer {
+  //   height: 10vh;
+  // }
 }

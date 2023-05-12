@@ -6,7 +6,7 @@ const LandingPage = () => {
     <main id={styles.main_wrapper}>
       <section id={styles.content_wrapper}>
         <section className={styles.info_section}>
-          <h1 id={styles.header_text}>
+          {/* <h1 id={styles.header_text}>
             Learn more about your favorite artists.
           </h1>
           <p id={styles.header_subtext}>
@@ -23,7 +23,7 @@ const LandingPage = () => {
           </section>
           <Link id={styles.login_link} to="/home">
             <button>Login to Spotify</button>
-          </Link>
+          </Link> */}
         </section>
         <section className={styles.hero_image_section}></section>
       </section>
