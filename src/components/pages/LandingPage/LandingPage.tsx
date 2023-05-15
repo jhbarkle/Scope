@@ -19,7 +19,10 @@ const LandingPage = () => {
           </section>
         </section>
         <section id={styles.image_content}>
-          <img src="/icons/landing-page-image.jpg" alt="" />
+          <img
+            src="/icons/landing-page-image.jpg"
+            alt="music-artist-performing"
+          />
         </section>
       </section>
       <footer>Powered by Spotify & ChatGPT</footer>
