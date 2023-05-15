@@ -14,7 +14,7 @@ const LandingPage = () => {
               your Spotify stats!
             </p>
             <Link to="/home">
-              <button>Login to Spotify</button>
+              <button id={styles.login_button}>Login to Spotify</button>
             </Link>
           </section>
         </section>
