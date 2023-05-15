@@ -8,7 +8,7 @@
 
 #main_content_section {
   background-color: #2ecc71;
-  height: 90vh;
+  height: 94vh;
   display: flex;
   flex-direction: row;
 
@@ -25,11 +25,17 @@
 #image_content {
   background-color: #e74c3c;
   width: 40%;
+
+  & > img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
 }
 
 footer {
   background-color: #f1c40f;
-  height: 10vh;
+  height: 6vh;
 }
 
 // #content_wrapper {
@@ -143,7 +149,10 @@ footer {
 /* Screen Size Smaller than 1200px */
 @media only screen and (max-width: 1150px) {
   #info_content {
-    background-color: #8e44ad;
+    background-image: url("icons/landing-page-image.jpg");
+    background-position: center;
+    background-size: cover;
+    filter: brightness(0.5);
     width: 100%;
   }
 

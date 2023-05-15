@@ -6,7 +6,9 @@ const LandingPage = () => {
     <main id={styles.main_wrapper}>
       <section id={styles.main_content_section}>
         <section id={styles.info_content}></section>
-        <section id={styles.image_content}></section>
+        <section id={styles.image_content}>
+          <img src="/icons/landing-page-image.jpg" alt="" />
+        </section>
       </section>
       <footer></footer>
     </main>
