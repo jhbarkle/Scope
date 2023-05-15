@@ -20,6 +20,14 @@
 #info_content {
   background-color: #1abc9c;
   width: 60%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 50px;
+}
+
+#info_text_container {
+  border: 1px solid black;
 }
 
 #image_content {
@@ -36,6 +44,11 @@
 footer {
   background-color: #f1c40f;
   height: 6vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 // #content_wrapper {
