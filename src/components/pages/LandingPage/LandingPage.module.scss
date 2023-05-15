@@ -7,12 +7,28 @@
 }
 
 #main_content_section {
-  background-color: green;
+  background-color: #2ecc71;
   height: 90vh;
+  display: flex;
+  flex-direction: row;
+
+  & > section {
+    height: 100%;
+  }
+}
+
+#info_content {
+  background-color: #1abc9c;
+  width: 60%;
+}
+
+#image_content {
+  background-color: #e74c3c;
+  width: 40%;
 }
 
 footer {
-  background-color: blue;
+  background-color: #f1c40f;
   height: 10vh;
 }
 
@@ -125,7 +141,15 @@ footer {
 /*********** Media Queries *************/
 
 /* Screen Size Smaller than 1200px */
-@media only screen and (max-width: 1250px) {
+@media only screen and (max-width: 1150px) {
+  #info_content {
+    background-color: #8e44ad;
+    width: 100%;
+  }
+
+  #image_content {
+    display: none;
+  }
 }
 
 /* Screen Size Smaller than 900px */
