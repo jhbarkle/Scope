@@ -1,29 +1,39 @@
 import { useEffect, useState } from "react";
 import styles from "./HomePage.module.scss";
-import { login } from "../../../services/provider";
+import { login } from "../../../services/spotify";
 
 const HomePage = () => {
-  // const [profile, setProfile] = useState();
-
-  // useEffect(() => {
-  //   const fetch = async () => {
-  //     const accessToken = await getAccessToken(CLIENT_ID, code!);
-  //     const profile = await fetchProfile(accessToken);
-  //     console.log("profile", profile);
-  //     setProfile(profile);
-  //     // populateUI(profile);
-  //   };
-
-  //   fetch();
-  // }, []);
+  const [displayName, setDisplayName] = useState(
+    localStorage.getItem("display_name") ?? "User"
+  );
 
   useEffect(() => {
-    login();
+    const fetchProfile = async () => {
+      if (
+        localStorage.getItem("display_name") === undefined ||
+        localStorage.getItem("display_name") === null
+      ) {
+        console.log("Grabbing User Profile");
+        await login();
+      } else {
+        console.log("Already Logged In");
+        return;
+      }
+
+      const displayName = localStorage.getItem("display_name");
+      setDisplayName(displayName ?? "Anon");
+    };
+
+    fetchProfile();
   }, []);
 
-  return (
+  return displayName === "User" ? (
+    <div>
+      <img src="/loading.gif" alt="Loading" />
+    </div>
+  ) : (
     <div id={styles.home_wrapper}>
-      <h1>Home</h1>
+      <h1>Hi, {displayName}</h1>
     </div>
   );
 };

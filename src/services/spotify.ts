@@ -1,16 +1,23 @@
-const CLIENT_ID = "20e76801c41c40b8a1fb1fa67c8d05ac";
+export const CLIENT_ID = "20e76801c41c40b8a1fb1fa67c8d05ac";
+export const CLIENT_SECRET = "229394766a4546e79c9b7bb8e393f9ac";
+
+export const redirect_uri = "http://localhost:5174/home";
+
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
-const redirect_uri = "http://localhost:5174/home";
 
 export const login = async () => {
   if (!code) {
+    console.log("Authorizing...");
+
+    // Clear Display Name
+    localStorage.removeItem("display_name");
     redirectToAuthCodeFlow(CLIENT_ID);
   } else {
-    console.log("User Authenticated, now grabbing profile data");
+    console.log("Gathering Access Token & Profile Data...");
     const accessToken = await getAccessToken(CLIENT_ID, code);
     const profile = await fetchProfile(accessToken);
-    console.log("profile", profile);
+    localStorage.setItem("display_name", profile.display_name);
   }
 };
 
@@ -51,7 +58,10 @@ async function generateCodeChallenge(codeVerifier: string) {
     .replace(/=+$/, "");
 }
 
-async function getAccessToken(clientId: string, code: string): Promise<string> {
+export async function getAccessToken(
+  clientId: string,
+  code: string
+): Promise<string> {
   const verifier = localStorage.getItem("verifier");
 
   const params = new URLSearchParams();
@@ -68,6 +78,7 @@ async function getAccessToken(clientId: string, code: string): Promise<string> {
   });
 
   const { access_token } = await result.json();
+  localStorage.setItem("token", access_token);
   return access_token;
 }
 
@@ -76,6 +87,5 @@ async function fetchProfile(token: string): Promise<any> {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
-
   return await result.json();
 }
