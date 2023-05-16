@@ -1,6 +1,4 @@
 export const CLIENT_ID = "20e76801c41c40b8a1fb1fa67c8d05ac";
-export const CLIENT_SECRET = "229394766a4546e79c9b7bb8e393f9ac";
-
 export const redirect_uri = "http://localhost:5174/home";
 
 const params = new URLSearchParams(window.location.search);
@@ -79,6 +77,7 @@ export async function getAccessToken(
 
   const { access_token } = await result.json();
   localStorage.setItem("token", access_token);
+
   return access_token;
 }
 
