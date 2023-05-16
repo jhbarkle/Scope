@@ -8,7 +8,7 @@ const HomePage = () => {
   );
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfileData = async () => {
       if (
         localStorage.getItem("display_name") === undefined ||
         localStorage.getItem("display_name") === null
@@ -24,7 +24,7 @@ const HomePage = () => {
       setDisplayName(displayName ?? "Anon");
     };
 
-    fetchProfile();
+    fetchProfileData();
   }, []);
 
   return displayName === "User" ? (

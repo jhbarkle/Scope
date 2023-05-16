@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import styles from "./LandingPage.module.scss";
 import { login } from "../../../services/spotify";
 
