@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import styles from "./LandingPage.module.scss";
+import { login } from "../../../services/provider";
 
 const LandingPage = () => {
   return (
@@ -13,9 +14,11 @@ const LandingPage = () => {
               automatically create playlists around these artists, and even view
               your Spotify stats!
             </p>
-            <Link to="/home">
-              <button id={styles.login_button}>Login to Spotify</button>
-            </Link>
+            {/* <Link to="/home"> */}
+            <button onClick={() => login()} id={styles.login_button}>
+              Login to Spotify
+            </button>
+            {/* </Link> */}
           </section>
         </section>
         <section id={styles.image_content}>
