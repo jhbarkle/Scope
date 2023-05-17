@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import styles from "./HomePage.module.scss";
-import {
-  authorizeAndGatherUserData,
-  fetchProfile,
-  makeAPIRequest,
-} from "../../../services/spotify";
+import { fetchProfile } from "../../../services/spotify";
 import { UserProfile } from "../../../models/Profile";
+import { makeAPIRequest } from "../../../services";
+import { authorizeAndGatherUserData } from "../../../services/spotify_auth";
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
