@@ -8,6 +8,7 @@ import { UserProfile } from "./models/Profile";
 
 function App() {
   const [user, setUser] = useState<UserProfile>();
+
   return (
     <>
       <UserContext.Provider value={{ user, setUser }}>

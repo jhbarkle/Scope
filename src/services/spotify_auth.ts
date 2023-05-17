@@ -8,18 +8,19 @@ import {
 
 export const authorizeAndGatherUserData = async () => {
   if (!code) {
-    console.log("Authorizing...");
-
-    // Clear Display Name
-    localStorage.removeItem("display_name");
+    console.log("Redirecting to Spotify for Authorization...");
+    console.log("Clearing Local Storage...");
+    localStorage.clear();
     redirectToAuthCodeFlow(CLIENT_ID);
   } else {
-    const data = localStorage.getItem("tokenExpiresIn");
+    const data = localStorage.getItem("tokenObject");
+    // Check if we have already gathered the user's profile data
     if (!data) {
+      console.log("Token has not been gathered yet.");
       console.log("Gathering Access Token & Profile Data...");
       await getAccessToken(CLIENT_ID, code);
     } else {
-      console.log("User data and Access Token already gathered.");
+      console.log("User Data and Access Token already gathered.");
     }
   }
 };

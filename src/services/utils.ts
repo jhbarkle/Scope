@@ -1,9 +1,10 @@
-require("dotenv").config();
-
-type EnvVariables = "CLIENT_ID" | "REDIRECT_URI" | "SPOTIFY_BASE_URL";
+type EnvVariables =
+  | "VITE_CLIENT_ID"
+  | "VITE_REDIRECT_URI"
+  | "VITE_SPOTIFY_BASE_URL";
 
 export const getEnvVariableSafely = (variable: EnvVariables) => {
-  const value = process.env[variable];
+  const value = import.meta.env.variable;
   if (!value) {
     throw new Error(`Missing environment variable: ${variable}`);
   }
@@ -15,11 +16,11 @@ export const setAPIToken = (token: string) => {
   console.log("Setting API Token...");
   const timestamp = new Date().getTime();
   const data = { token, timestamp };
-  localStorage.setItem("tokenExpiresIn", JSON.stringify(data));
+  localStorage.setItem("tokenObject", JSON.stringify(data));
 };
 
 export const getToken = (): string => {
-  const data = localStorage.getItem("tokenExpiresIn");
+  const data = localStorage.getItem("tokenObject");
   if (data) {
     const { token } = JSON.parse(data);
     return token;
@@ -29,7 +30,7 @@ export const getToken = (): string => {
 
 // Check if 60 minutes have passed since the token was set
 export const isTokenExpired = () => {
-  const data = localStorage.getItem("tokenExpiresIn");
+  const data = localStorage.getItem("tokenObject");
   if (data) {
     const { timestamp } = JSON.parse(data);
     const currentTime = new Date().getTime();
