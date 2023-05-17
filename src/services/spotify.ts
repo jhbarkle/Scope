@@ -84,6 +84,77 @@ export async function getAccessToken(
   return access_token;
 }
 
+type SimpleArtistObject = {
+  name: string;
+  id: string;
+  followers: number;
+  genres: string[];
+  href: string;
+  image: string;
+  popularity: number;
+  uri: string;
+};
+
+type SimpleAlbumObject = {
+  albumType: string;
+  totalTracks: number;
+  id: string;
+  image: string;
+  name: string;
+  releaseDate: string;
+  uri: string;
+  genres: string[];
+  label: string;
+  popularity: number;
+  artists: SimpleArtistObject[];
+};
+
+type SimpleTrackObject = {
+  album: SimpleAlbumObject;
+  artists: SimpleArtistObject[];
+  explicit: boolean;
+  href: string;
+  id: string;
+  name: string;
+  popularity: number;
+  previewUrl: string | null;
+  uri: string;
+};
+
+type Profile = {
+  display_name: string;
+  email: string;
+  followers: number;
+  id: string;
+  profileImage: string;
+  uri: string;
+  topAlbums: {
+    shortTerm: string[];
+    mediumTerm: string[];
+    longTerm: string[];
+  };
+  topArtists: {
+    shortTerm: string[];
+    mediumTerm: string[];
+    longTerm: string[];
+  };
+  followedArtists: SimpleArtistObject[];
+};
+
+type ConnectedArtist = {
+  track: SimpleTrackObject;
+  artist: SimpleArtistObject;
+  image: string;
+  sampleTrackURL: string;
+  href: string;
+};
+
+type SearchState = {
+  isLoading: boolean;
+  artist: SimpleArtistObject;
+  connectedArtists: SimpleArtistObject[];
+};
+
 async function fetchProfile(token: string): Promise<any> {
   const result = await fetch("https://api.spotify.com/v1/me", {
     method: "GET",
