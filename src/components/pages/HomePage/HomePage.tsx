@@ -33,7 +33,8 @@ const HomePage = () => {
     </div>
   ) : (
     <div id={styles.home_wrapper}>
-      <h1>Hi, {displayName}</h1>
+      <section id={styles.main_content}></section>
+      <section id={styles.aside_content}></section>
     </div>
   );
 };

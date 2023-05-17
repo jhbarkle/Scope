@@ -29,7 +29,10 @@ export async function redirectToAuthCodeFlow(clientId: string) {
   params.append("client_id", clientId);
   params.append("response_type", "code");
   params.append("redirect_uri", redirect_uri);
-  params.append("scope", "user-read-private user-read-email");
+  params.append(
+    "scope",
+    "user-read-private user-read-email user-top-read user-follow-modify"
+  );
   params.append("code_challenge_method", "S256");
   params.append("code_challenge", challenge);
 
@@ -86,5 +89,199 @@ async function fetchProfile(token: string): Promise<any> {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
+  return await result.json();
+}
+
+async function fetchTopArtists(token: string, timeRange: string): Promise<any> {
+  const result = await fetch(
+    `https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=50`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return await result.json();
+}
+
+async function fetchTopTracks(token: string, timeRange: string): Promise<any> {
+  const result = await fetch(
+    `https://api.spotify.com/v1/me/top/tracks?time_range=${timeRange}&limit=50`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return await result.json();
+}
+
+async function fetchFollowedArtists(token: string): Promise<any> {
+  const result = await fetch(
+    "https://api.spotify.com/v1/me/following?type=artist",
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return await result.json();
+}
+
+async function search(token: string, artist: string): Promise<any> {
+  const result = await fetch(
+    `https://api.spotify.com/v1/search?q=${artist}&type=artist&limit=1`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return await result.json();
+}
+
+async function fetchArtist(token: string, artistId: string): Promise<any> {
+  const result = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return await result.json();
+}
+
+async function fetchArtistAlbums(
+  token: string,
+  artistId: string
+): Promise<any> {
+  const result = await fetch(
+    `https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=single%2C+album&limit=50
+    `,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return await result.json();
+}
+
+async function fetchConnectedArtists(
+  token: string,
+  artistId: string
+): Promise<any> {
+  const result = await fetch(
+    `https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=appears_on&limit=50
+    `,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return await result.json();
+}
+
+async function fetchConnectedArtistsAlbums(
+  token: string,
+  albumIds: string[]
+): Promise<any> {
+  const result = await fetch(
+    `https://api.spotify.com/v1/albums/?ids=${albumIds.join(",")}
+    `,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return await result.json();
+}
+
+async function fetchArtistTopTracks(
+  token: string,
+  artistId: string
+): Promise<any> {
+  const result = await fetch(
+    `https://api.spotify.com/v1/artists/${artistId}/top-tracks
+    `,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return await result.json();
+}
+
+async function fetchRelatedArtists(
+  token: string,
+  artistId: string
+): Promise<any> {
+  const result = await fetch(
+    `https://api.spotify.com/v1/artists/${artistId}/related-artists
+    `,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+  return await result.json();
+}
+
+// PUT API Calls
+async function unFollowArtist(token: string, artistId: string): Promise<any> {
+  const result = await fetch("https://api.spotify.com/v1/me/following", {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      ids: [artistId],
+    }),
+  });
+  return await result.json();
+}
+
+async function followArtist(token: string, artistId: string): Promise<any> {
+  const result = await fetch("https://api.spotify.com/v1/me/following", {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      ids: [artistId],
+    }),
+  });
+  return await result.json();
+}
+
+async function createPlaylist(
+  token: string,
+  name: string,
+  description: string,
+  isPublic: boolean,
+  userId: string
+): Promise<any> {
+  const result = await fetch(
+    `https://api.spotify.com/v1/users/${userId}/playlists`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        name: name,
+        description: description,
+        public: isPublic,
+      }),
+    }
+  );
+
+  // need to get spotify id of playlist
+  return await result.json();
+}
+
+async function addItemsToPlaylist(
+  token: string,
+  playlistId: string,
+  uris: string[]
+): Promise<any> {
+  const result = await fetch(
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        uris: uris,
+      }),
+    }
+  );
+
+  // need to get spotify id of playlist
   return await result.json();
 }
