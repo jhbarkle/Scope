@@ -4,7 +4,7 @@ type EnvVariables =
   | "VITE_SPOTIFY_BASE_URL";
 
 export const getEnvVariableSafely = (variable: EnvVariables) => {
-  const value = import.meta.env.variable;
+  const value = process.env[variable];
   if (!value) {
     throw new Error(`Missing environment variable: ${variable}`);
   }

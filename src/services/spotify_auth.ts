@@ -6,6 +6,8 @@ import {
   setAPIToken,
 } from "./utils";
 
+// Either redirect to Spotify for Authorization or gather the
+// user's data depending on if the user has already authorized the app
 export const authorizeAndGatherUserData = async () => {
   if (!code) {
     console.log("Redirecting to Spotify for Authorization...");
@@ -14,7 +16,7 @@ export const authorizeAndGatherUserData = async () => {
     redirectToAuthCodeFlow(CLIENT_ID);
   } else {
     const data = localStorage.getItem("tokenObject");
-    // Check if we have already gathered the user's profile data
+    // Check if we have already generated an access token
     if (!data) {
       console.log("Token has not been gathered yet.");
       console.log("Gathering Access Token & Profile Data...");
