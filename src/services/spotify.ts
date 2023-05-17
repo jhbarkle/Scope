@@ -1,3 +1,5 @@
+import { UserProfile } from "../models/Profile";
+
 export const CLIENT_ID = "20e76801c41c40b8a1fb1fa67c8d05ac";
 export const redirect_uri = "http://localhost:5174/home";
 const baseSpotifyUrl = "https://api.spotify.com/v1";
@@ -33,6 +35,15 @@ function setAPIToken(token: string) {
   localStorage.setItem("tokenExpiresIn", JSON.stringify(data));
 }
 
+const getToken = (): string => {
+  const data = localStorage.getItem("tokenExpiresIn");
+  if (data) {
+    const { token } = JSON.parse(data);
+    return token;
+  }
+  return "";
+};
+
 // Check if 60 minutes have passed since the token was set
 export const isTokenExpired = () => {
   const data = localStorage.getItem("tokenExpiresIn");
@@ -47,7 +58,7 @@ export const isTokenExpired = () => {
   return true; // Return true if the token is not found in localStorage
 };
 
-export async function redirectToAuthCodeFlow(clientId: string) {
+export const redirectToAuthCodeFlow = async (clientId: string) => {
   const verifier = generateCodeVerifier(128);
   const challenge = await generateCodeChallenge(verifier);
 
@@ -62,9 +73,9 @@ export async function redirectToAuthCodeFlow(clientId: string) {
   params.append("code_challenge", challenge);
 
   document.location = `https://accounts.spotify.com/authorize?${params.toString()}`;
-}
+};
 
-function generateCodeVerifier(length: number) {
+const generateCodeVerifier = (length: number) => {
   let text = "";
   const possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -73,21 +84,21 @@ function generateCodeVerifier(length: number) {
     text += possible.charAt(Math.floor(Math.random() * possible.length));
   }
   return text;
-}
+};
 
-async function generateCodeChallenge(codeVerifier: string) {
+const generateCodeChallenge = async (codeVerifier: string) => {
   const data = new TextEncoder().encode(codeVerifier);
   const digest = await window.crypto.subtle.digest("SHA-256", data);
   return btoa(String.fromCharCode.apply(null, [...new Uint8Array(digest)]))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
-}
+};
 
-export async function getAccessToken(
+export const getAccessToken = async (
   clientId: string,
   code: string
-): Promise<string> {
+): Promise<string> => {
   const verifier = localStorage.getItem("verifier");
 
   const params = new URLSearchParams();
@@ -95,6 +106,8 @@ export async function getAccessToken(
   params.append("grant_type", "authorization_code");
   params.append("code", code);
   params.append("redirect_uri", redirect_uri);
+  // We are 100% sure this value will be in localStorage
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   params.append("code_verifier", verifier!);
 
   const result = await fetch("https://accounts.spotify.com/api/token", {
@@ -103,92 +116,70 @@ export async function getAccessToken(
     body: params,
   });
 
-  const { access_token } = await result.json();
-  // localStorage.setItem("token", access_token);
+  const { access_token, refresh_token } = await result.json();
+  localStorage.setItem("refresh_token", refresh_token);
   setAPIToken(access_token);
 
   return access_token;
+};
+
+const refreshToken = async () => {
+  try {
+    const current_refresh_token = localStorage.getItem("refresh_token");
+    const current_token = getToken();
+    const params = new URLSearchParams();
+    params.append("client_id", CLIENT_ID);
+    params.append("grant_type", "refresh_token");
+    params.append("refresh_token", current_refresh_token ?? "");
+
+    const result = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${current_token}`,
+      },
+      body: params,
+    });
+
+    //VERIFY WE GET A NEW REFRESH TOKEN BACK
+
+    // Handle the response and extract the new token
+    const { access_token, refresh_token } = await result.json();
+    console.log("New Access Token:", access_token);
+    console.log("Refresh Token", refresh_token);
+
+    setAPIToken(access_token);
+
+    // Perform any necessary actions with the new token
+  } catch (error) {
+    console.error("Error refreshing token:", error);
+  }
+};
+
+type CallbackFunction<T> = (...args: unknown[]) => T;
+
+export async function makeAPIRequest<T>(call: CallbackFunction<T>) {
+  if (isTokenExpired()) {
+    // Get Refresh Token
+    console.log("Token has expired, refreshing...");
+    await refreshToken();
+    console.log("Token refreshed.");
+  }
+  return await call();
 }
 
-type SimpleArtistObject = {
-  name: string;
-  id: string;
-  followers: number;
-  genres: string[];
-  href: string;
-  image: string;
-  popularity: number;
-  uri: string;
-};
-
-type SimpleAlbumObject = {
-  albumType: string;
-  totalTracks: number;
-  id: string;
-  image: string;
-  name: string;
-  releaseDate: string;
-  uri: string;
-  genres: string[];
-  label: string;
-  popularity: number;
-  artists: SimpleArtistObject[];
-};
-
-type SimpleTrackObject = {
-  album: SimpleAlbumObject;
-  artists: SimpleArtistObject[];
-  explicit: boolean;
-  href: string;
-  id: string;
-  name: string;
-  popularity: number;
-  previewUrl: string | null;
-  uri: string;
-};
-
-type Profile = {
-  display_name: string;
-  email: string;
-  followers: number;
-  id: string;
-  profileImage: string;
-  uri: string;
-  topAlbums: {
-    shortTerm: string[];
-    mediumTerm: string[];
-    longTerm: string[];
-  };
-  topArtists: {
-    shortTerm: string[];
-    mediumTerm: string[];
-    longTerm: string[];
-  };
-  followedArtists: SimpleArtistObject[];
-};
-
-type ConnectedArtist = {
-  track: SimpleTrackObject;
-  artist: SimpleArtistObject;
-  image: string;
-  sampleTrackURL: string;
-  href: string;
-};
-
-type SearchState = {
-  isLoading: boolean;
-  artist: SimpleArtistObject;
-  connectedArtists: SimpleArtistObject[];
-  searchHistory: string[];
-};
-
-async function fetchProfile(token: string): Promise<any> {
+export const fetchProfile = async (): Promise<UserProfile> => {
+  const token = getToken();
   const result = await fetch(`${baseSpotifyUrl}/me`, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
-  return await result.json();
-}
+
+  const jsonResult = await result.json();
+
+  console.log("Profile: ", jsonResult);
+  return jsonResult;
+};
 
 async function fetchTopArtists(token: string, timeRange: string): Promise<any> {
   const result = await fetch(
