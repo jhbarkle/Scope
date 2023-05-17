@@ -1,10 +1,12 @@
 export const CLIENT_ID = "20e76801c41c40b8a1fb1fa67c8d05ac";
 export const redirect_uri = "http://localhost:5174/home";
-
+const baseSpotifyUrl = "https://api.spotify.com/v1";
+const scopes =
+  "user-read-private user-read-email user-top-read user-follow-modify";
 const params = new URLSearchParams(window.location.search);
 const code = params.get("code");
 
-export const login = async () => {
+export const authorizeAndGatherUserData = async () => {
   if (!code) {
     console.log("Authorizing...");
 
@@ -12,11 +14,37 @@ export const login = async () => {
     localStorage.removeItem("display_name");
     redirectToAuthCodeFlow(CLIENT_ID);
   } else {
-    console.log("Gathering Access Token & Profile Data...");
-    const accessToken = await getAccessToken(CLIENT_ID, code);
-    const profile = await fetchProfile(accessToken);
-    localStorage.setItem("display_name", profile.display_name);
+    const data = localStorage.getItem("tokenExpiresIn");
+    if (!data) {
+      console.log("Gathering Access Token & Profile Data...");
+      const accessToken = await getAccessToken(CLIENT_ID, code);
+      // const profile = await fetchProfile(accessToken);
+    } else {
+      console.log("User data already gathered.");
+    }
   }
+};
+
+// Set the API token with a timestamp in localStorage
+function setAPIToken(token: string) {
+  console.log("Setting API Token...");
+  const timestamp = new Date().getTime();
+  const data = { token, timestamp };
+  localStorage.setItem("tokenExpiresIn", JSON.stringify(data));
+}
+
+// Check if 60 minutes have passed since the token was set
+export const isTokenExpired = () => {
+  const data = localStorage.getItem("tokenExpiresIn");
+  if (data) {
+    const { timestamp } = JSON.parse(data);
+    const currentTime = new Date().getTime();
+    const timeDifference = currentTime - timestamp;
+    const minutesDifference = Math.floor(timeDifference / (1000 * 60)); // Convert milliseconds to minutes
+
+    return minutesDifference >= 60;
+  }
+  return true; // Return true if the token is not found in localStorage
 };
 
 export async function redirectToAuthCodeFlow(clientId: string) {
@@ -29,10 +57,7 @@ export async function redirectToAuthCodeFlow(clientId: string) {
   params.append("client_id", clientId);
   params.append("response_type", "code");
   params.append("redirect_uri", redirect_uri);
-  params.append(
-    "scope",
-    "user-read-private user-read-email user-top-read user-follow-modify"
-  );
+  params.append("scope", scopes);
   params.append("code_challenge_method", "S256");
   params.append("code_challenge", challenge);
 
@@ -79,7 +104,8 @@ export async function getAccessToken(
   });
 
   const { access_token } = await result.json();
-  localStorage.setItem("token", access_token);
+  // localStorage.setItem("token", access_token);
+  setAPIToken(access_token);
 
   return access_token;
 }
@@ -153,10 +179,11 @@ type SearchState = {
   isLoading: boolean;
   artist: SimpleArtistObject;
   connectedArtists: SimpleArtistObject[];
+  searchHistory: string[];
 };
 
 async function fetchProfile(token: string): Promise<any> {
-  const result = await fetch("https://api.spotify.com/v1/me", {
+  const result = await fetch(`${baseSpotifyUrl}/me`, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -165,7 +192,7 @@ async function fetchProfile(token: string): Promise<any> {
 
 async function fetchTopArtists(token: string, timeRange: string): Promise<any> {
   const result = await fetch(
-    `https://api.spotify.com/v1/me/top/artists?time_range=${timeRange}&limit=50`,
+    `${baseSpotifyUrl}/me/top/artists?time_range=${timeRange}&limit=50`,
     {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
@@ -176,7 +203,7 @@ async function fetchTopArtists(token: string, timeRange: string): Promise<any> {
 
 async function fetchTopTracks(token: string, timeRange: string): Promise<any> {
   const result = await fetch(
-    `https://api.spotify.com/v1/me/top/tracks?time_range=${timeRange}&limit=50`,
+    `${baseSpotifyUrl}/me/top/tracks?time_range=${timeRange}&limit=50`,
     {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
@@ -186,19 +213,16 @@ async function fetchTopTracks(token: string, timeRange: string): Promise<any> {
 }
 
 async function fetchFollowedArtists(token: string): Promise<any> {
-  const result = await fetch(
-    "https://api.spotify.com/v1/me/following?type=artist",
-    {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+  const result = await fetch(`${baseSpotifyUrl}/me/following?type=artist`, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return await result.json();
 }
 
 async function search(token: string, artist: string): Promise<any> {
   const result = await fetch(
-    `https://api.spotify.com/v1/search?q=${artist}&type=artist&limit=1`,
+    `${baseSpotifyUrl}/search?q=${artist}&type=artist&limit=1`,
     {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
@@ -208,7 +232,7 @@ async function search(token: string, artist: string): Promise<any> {
 }
 
 async function fetchArtist(token: string, artistId: string): Promise<any> {
-  const result = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
+  const result = await fetch(`${baseSpotifyUrl}/artists/${artistId}`, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -220,7 +244,7 @@ async function fetchArtistAlbums(
   artistId: string
 ): Promise<any> {
   const result = await fetch(
-    `https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=single%2C+album&limit=50
+    `${baseSpotifyUrl}/artists/${artistId}/albums?include_groups=single%2C+album&limit=50
     `,
     {
       method: "GET",
@@ -235,7 +259,7 @@ async function fetchConnectedArtists(
   artistId: string
 ): Promise<any> {
   const result = await fetch(
-    `https://api.spotify.com/v1/artists/${artistId}/albums?include_groups=appears_on&limit=50
+    `${baseSpotifyUrl}/artists/${artistId}/albums?include_groups=appears_on&limit=50
     `,
     {
       method: "GET",
@@ -250,7 +274,7 @@ async function fetchConnectedArtistsAlbums(
   albumIds: string[]
 ): Promise<any> {
   const result = await fetch(
-    `https://api.spotify.com/v1/albums/?ids=${albumIds.join(",")}
+    `${baseSpotifyUrl}/albums/?ids=${albumIds.join(",")}
     `,
     {
       method: "GET",
@@ -265,7 +289,7 @@ async function fetchArtistTopTracks(
   artistId: string
 ): Promise<any> {
   const result = await fetch(
-    `https://api.spotify.com/v1/artists/${artistId}/top-tracks
+    `${baseSpotifyUrl}/artists/${artistId}/top-tracks
     `,
     {
       method: "GET",
@@ -280,7 +304,7 @@ async function fetchRelatedArtists(
   artistId: string
 ): Promise<any> {
   const result = await fetch(
-    `https://api.spotify.com/v1/artists/${artistId}/related-artists
+    `${baseSpotifyUrl}/artists/${artistId}/related-artists
     `,
     {
       method: "GET",
@@ -292,7 +316,7 @@ async function fetchRelatedArtists(
 
 // PUT API Calls
 async function unFollowArtist(token: string, artistId: string): Promise<any> {
-  const result = await fetch("https://api.spotify.com/v1/me/following", {
+  const result = await fetch(`${baseSpotifyUrl}/me/following`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
     body: JSON.stringify({
@@ -303,7 +327,7 @@ async function unFollowArtist(token: string, artistId: string): Promise<any> {
 }
 
 async function followArtist(token: string, artistId: string): Promise<any> {
-  const result = await fetch("https://api.spotify.com/v1/me/following", {
+  const result = await fetch(`${baseSpotifyUrl}/me/following`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${token}` },
     body: JSON.stringify({
@@ -320,18 +344,15 @@ async function createPlaylist(
   isPublic: boolean,
   userId: string
 ): Promise<any> {
-  const result = await fetch(
-    `https://api.spotify.com/v1/users/${userId}/playlists`,
-    {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: JSON.stringify({
-        name: name,
-        description: description,
-        public: isPublic,
-      }),
-    }
-  );
+  const result = await fetch(`${baseSpotifyUrl}/users/${userId}/playlists`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({
+      name: name,
+      description: description,
+      public: isPublic,
+    }),
+  });
 
   // need to get spotify id of playlist
   return await result.json();
@@ -343,7 +364,7 @@ async function addItemsToPlaylist(
   uris: string[]
 ): Promise<any> {
   const result = await fetch(
-    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    `${baseSpotifyUrl}/playlists/${playlistId}/tracks`,
     {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "./HomePage.module.scss";
-import { login } from "../../../services/spotify";
+import { authorizeAndGatherUserData } from "../../../services/spotify";
 
 const HomePage = () => {
   const [displayName, setDisplayName] = useState(
@@ -9,19 +9,20 @@ const HomePage = () => {
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (
-        localStorage.getItem("display_name") === undefined ||
-        localStorage.getItem("display_name") === null
-      ) {
-        console.log("Grabbing User Profile");
-        await login();
-      } else {
-        console.log("Already Logged In");
-        return;
-      }
+      // if (
+      //   localStorage.getItem("display_name") === undefined ||
+      //   localStorage.getItem("display_name") === null
+      // ) {
+      //   console.log("Fetching User Data");
+      //   await authorizeAndGatherUserData();
+      // } else {
+      //   console.log("Already Logged In");
+      //   return;
+      // }
+      await authorizeAndGatherUserData();
 
-      const displayName = localStorage.getItem("display_name");
-      setDisplayName(displayName ?? "Anon");
+      // const displayName = localStorage.getItem("display_name");
+      // setDisplayName(displayName ?? "Anon");
     };
 
     fetchProfileData();

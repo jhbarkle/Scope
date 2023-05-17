@@ -1,5 +1,5 @@
 import styles from "./LandingPage.module.scss";
-import { login } from "../../../services/spotify";
+import { authorizeAndGatherUserData } from "../../../services/spotify";
 
 const LandingPage = () => {
   return (
@@ -14,7 +14,10 @@ const LandingPage = () => {
               your Spotify stats!
             </p>
             {/* <Link to="/home"> */}
-            <button onClick={() => login()} id={styles.login_button}>
+            <button
+              onClick={() => authorizeAndGatherUserData()}
+              id={styles.login_button}
+            >
               Login to Spotify
             </button>
             {/* </Link> */}
