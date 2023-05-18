@@ -78,6 +78,7 @@ export const getAccessToken = async (
 
 export const refreshToken = async () => {
   try {
+    console.log("Refreshing Token...");
     const current_refresh_token = localStorage.getItem("refresh_token");
     const current_token = getToken();
     const params = new URLSearchParams();
@@ -98,6 +99,7 @@ export const refreshToken = async () => {
 
     // Handle the response and extract the new token
     const { access_token, refresh_token } = await result.json();
+    console.log("Response", result);
     console.log("New Access Token:", access_token);
     console.log("Refresh Token", refresh_token);
 

@@ -40,6 +40,8 @@ export const isTokenExpired = () => {
     const minutesDifference = Math.floor(timeDifference / (1000 * 60)); // Convert milliseconds to minutes
 
     return minutesDifference >= 60;
+  } else {
+    console.log("Token not found in localStorage.");
   }
   return true; // Return true if the token is not found in localStorage
 };
@@ -70,5 +72,7 @@ export const checkTokenExpiration = async () => {
     console.log("Token has expired, refreshing...");
     await refreshToken();
     console.log("Token refreshed.");
+  } else {
+    console.log("Token has not expired yet.");
   }
 };
