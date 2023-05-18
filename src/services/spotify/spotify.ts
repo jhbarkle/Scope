@@ -1,6 +1,6 @@
 import { baseSpotifyUrl } from ".";
-import { UserProfile } from "../models/Profile";
-import { getToken } from "./utils";
+import { UserProfile } from "../../models/Profile";
+import { getToken } from "../utils";
 
 export const fetchProfile = async (): Promise<UserProfile> => {
   const token = getToken();

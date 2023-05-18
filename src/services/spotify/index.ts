@@ -1,5 +1,5 @@
 import { refreshToken } from "./spotify_auth";
-import { isTokenExpired } from "./utils";
+import { isTokenExpired } from "../utils";
 
 export const CLIENT_ID = "20e76801c41c40b8a1fb1fa67c8d05ac";
 export const redirect_uri = "http://localhost:5174/home";

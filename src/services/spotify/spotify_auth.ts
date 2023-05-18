@@ -1,10 +1,10 @@
-import { code, CLIENT_ID, redirect_uri, scopes } from ".";
+import { code, CLIENT_ID, redirect_uri, scopes } from "../spotify";
 import {
   generateCodeChallenge,
   generateCodeVerifier,
   getToken,
   setAPIToken,
-} from "./utils";
+} from "../utils";
 
 // Either redirect to Spotify for Authorization or gather the
 // user's data depending on if the user has already authorized the app

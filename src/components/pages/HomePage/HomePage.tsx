@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import styles from "./HomePage.module.scss";
-import { fetchProfile } from "../../../services/spotify";
-import { UserProfile } from "../../../models/Profile";
-import { makeAPIRequest } from "../../../services";
-import { authorizeAndGatherUserData } from "../../../services/spotify_auth";
+import { makeAPIRequest } from "../../../services/spotify";
+import { authorizeAndGatherUserData } from "../../../services/spotify/spotify_auth";
+import { fetchProfile } from "../../../services/spotify/spotify";
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   // States Needed:
   // 1. User's Profile Data
   // 2. Search State

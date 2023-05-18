@@ -1,4 +1,4 @@
-import { authorizeAndGatherUserData } from "../../../services/spotify_auth";
+import { authorizeAndGatherUserData } from "../../../services/spotify/spotify_auth";
 import styles from "./LandingPage.module.scss";
 
 const LandingPage = () => {
