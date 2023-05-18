@@ -1,3 +1,5 @@
+import { refreshToken } from "./spotify/spotify_auth";
+
 type EnvVariables =
   | "VITE_CLIENT_ID"
   | "VITE_REDIRECT_URI"
@@ -60,4 +62,13 @@ export const generateCodeChallenge = async (codeVerifier: string) => {
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
+};
+
+export const checkTokenExpiration = async () => {
+  if (isTokenExpired()) {
+    // Get Refresh Token
+    console.log("Token has expired, refreshing...");
+    await refreshToken();
+    console.log("Token refreshed.");
+  }
 };

@@ -19,8 +19,9 @@ export const authorizeAndGatherUserData = async () => {
     // Check if we have already generated an access token
     if (!data) {
       console.log("Token has not been gathered yet.");
-      console.log("Gathering Access Token & Profile Data...");
+      console.log("Gathering Access Token...");
       await getAccessToken(CLIENT_ID, code);
+      console.log("Access Token has been gathered.");
     } else {
       console.log("User Data and Access Token already gathered.");
     }
@@ -66,7 +67,10 @@ export const getAccessToken = async (
   });
 
   const { access_token, refresh_token } = await result.json();
+  console.log("Access token after first getting it: ", access_token);
   localStorage.setItem("refresh_token", refresh_token);
+
+  // setTimeout(setAPIToken, 5000, access_token);
   setAPIToken(access_token);
 
   return access_token;

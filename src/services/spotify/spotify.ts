@@ -1,9 +1,11 @@
 import { baseSpotifyUrl } from ".";
-import { UserProfile } from "../../models/Profile";
-import { getToken } from "../utils";
+import { SimpleArtistObject, UserProfile } from "../../models/Profile";
+import { checkTokenExpiration, getToken } from "../utils";
 
-export const fetchProfile = async (): Promise<UserProfile> => {
+export const fetchProfile = async (): Promise<UserProfile | undefined> => {
+  await checkTokenExpiration();
   const token = getToken();
+
   const result = await fetch(`${baseSpotifyUrl}/me`, {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
@@ -11,14 +13,42 @@ export const fetchProfile = async (): Promise<UserProfile> => {
 
   const jsonResult = await result.json();
 
-  console.log("Profile: ", jsonResult);
-  return jsonResult;
+  if (jsonResult) {
+    console.log("✅ Fetching Profile was successful");
+  } else {
+    console.log("❌ Fetching Profile was not successful", jsonResult);
+    return;
+  }
+
+  const profile: UserProfile = {
+    display_name: jsonResult.display_name,
+    email: jsonResult.email,
+    followers: jsonResult.followers.total,
+    id: jsonResult.id,
+    profileImage: jsonResult.images,
+    uri: jsonResult.uri,
+    topAlbums: {
+      shortTerm: [],
+      mediumTerm: [],
+      longTerm: [],
+    },
+    topArtists: {
+      shortTerm: [],
+      mediumTerm: [],
+      longTerm: [],
+    },
+    followedArtists: [],
+  };
+
+  return profile;
 };
 
 export const fetchTopArtists = async (
-  token: string,
-  timeRange: string
-): Promise<any> => {
+  timeRange: "short_term" | "medium_term" | "long_term"
+): Promise<SimpleArtistObject> => {
+  await checkTokenExpiration();
+  const token = getToken();
+
   const result = await fetch(
     `${baseSpotifyUrl}/me/top/artists?time_range=${timeRange}&limit=50`,
     {
