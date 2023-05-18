@@ -2,7 +2,7 @@ import { baseSpotifyUrl } from ".";
 import { SimpleArtistObject, UserProfile } from "../../models/Profile";
 import { checkTokenExpiration, getToken } from "../utils";
 
-export const fetchProfile = async (): Promise<UserProfile | undefined> => {
+export const fetchProfile = async (): Promise<UserProfile> => {
   await checkTokenExpiration();
   const token = getToken();
 
@@ -13,11 +13,11 @@ export const fetchProfile = async (): Promise<UserProfile | undefined> => {
 
   const jsonResult = await result.json();
 
-  if (jsonResult) {
-    console.log("✅ Fetching Profile was successful");
+  if (!jsonResult?.error) {
+    console.log("✅ Fetching Profile was successful", jsonResult);
   } else {
     console.log("❌ Fetching Profile was not successful", jsonResult);
-    return;
+    throw new Error("Fetching Profile was not successful");
   }
 
   const profile: UserProfile = {
@@ -25,7 +25,7 @@ export const fetchProfile = async (): Promise<UserProfile | undefined> => {
     email: jsonResult.email,
     followers: jsonResult.followers.total,
     id: jsonResult.id,
-    profileImage: jsonResult.images,
+    profileImage: jsonResult.images[0].url,
     uri: jsonResult.uri,
     topAlbums: {
       shortTerm: [],

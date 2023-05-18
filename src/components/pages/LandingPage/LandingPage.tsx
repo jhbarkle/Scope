@@ -13,14 +13,12 @@ const LandingPage = () => {
               automatically create playlists around these artists, and even view
               your Spotify stats!
             </p>
-            {/* <Link to="/home"> */}
             <button
               onClick={() => authorizeAndGatherUserData()}
               id={styles.login_button}
             >
               Login to Spotify
             </button>
-            {/* </Link> */}
           </section>
         </section>
         <section id={styles.image_content}>

@@ -3,6 +3,8 @@ import styles from "./HomePage.module.scss";
 import { authorizeAndGatherUserData } from "../../../services/spotify/spotify_auth";
 import { fetchProfile } from "../../../services/spotify/spotify";
 import { UserProfile } from "../../../models/Profile";
+import { useNavigate } from "react-router-dom";
+import GenericError from "../../molecules/GenericError";
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -16,6 +18,7 @@ const HomePage = () => {
       console.log("Fetching profile data...");
       await fetchProfile()
         .then((profile) => {
+          console.log("==========Success==========", profile);
           setUser(profile),
             () => {
               console.log("Finished fetching profile data.");
@@ -36,7 +39,9 @@ const HomePage = () => {
     fetchProfileData();
   }, []);
 
-  if (isError) return <div>There was an error.</div>;
+  if (isError) {
+    return <GenericError setIsError={setIsError} />;
+  }
 
   return isLoading ? (
     <div id={styles.loading}>
@@ -44,7 +49,18 @@ const HomePage = () => {
     </div>
   ) : (
     <div id={styles.home_wrapper}>
-      <section id={styles.main_content}></section>
+      <section id={styles.main_content}>
+        <h1>Hi, {user?.display_name}</h1>
+        <ul>
+          <li>Email: {user?.email}</li>
+          <li>Follower Count: {user?.followers}</li>
+          <li>Spotify ID: {user?.id}</li>
+          <li>Spotify URI: {user?.uri}</li>
+          <li>
+            <img src={user?.profileImage} alt="" />
+          </li>
+        </ul>
+      </section>
       <section id={styles.aside_content}></section>
     </div>
   );
