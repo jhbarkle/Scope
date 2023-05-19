@@ -42,9 +42,9 @@ export const mapToSimpleTrackObject = (
   const followedArtists: SimpleTrackObject[] = artists.map((track: Track) => {
     return {
       id: track.id,
-      trackName: track.name,
+      name: track.name,
       uri: track.uri,
-      albumImage: track.album.images[0].url,
+      image: track.album.images[0].url,
       albumName: track.album.name,
       href: track.href,
       popularity: track.popularity,

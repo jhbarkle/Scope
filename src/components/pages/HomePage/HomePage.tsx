@@ -8,8 +8,10 @@ import {
   fetchTopTracks,
 } from "../../../services/spotify/spotify";
 import { UserProfile } from "../../../models/UserProfile";
-import GenericError from "../../molecules/GenericError";
 import { initialUserProfile } from "./HomePage.helpers";
+import GenericError from "../../molecules/GenericError/GenericError";
+import Profile from "../../molecules/Profile/Profile";
+import Category from "../../molecules/Category/Category";
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -57,8 +59,7 @@ const HomePage = () => {
         };
         setUser(newUser);
         console.log(
-          " ✅ Successfully Updated User's Top Artists/Tracks and Followed Artist",
-          user
+          " ✅ Successfully Updated User's Top Artists/Tracks and Followed Artist"
         );
       } catch (error) {
         console.log(errorDebugLogString, error);
@@ -97,43 +98,14 @@ const HomePage = () => {
     // No error and not loading
     <div id={styles.home_wrapper}>
       {/* User Profile Info */}
-      <section id={styles.main_content}>
-        <h1>Hi, {user.display_name}</h1>
-        <ul>
-          <li>Email: {user.email}</li>
-          <li>Follower Count: {user.followers}</li>
-          <li>Spotify ID: {user.id}</li>
-          <li>Spotify URI: {user.uri}</li>
-          <li>
-            <img src={user.profileImage} alt="" />
-          </li>
-        </ul>
-      </section>
+      <Profile profile={user} />
       {/* Followed Artists */}
       <section>
-        <h1>Followed Artists</h1>
-        <ul
-          style={{
-            listStyle: "none",
-            display: "flex",
-            flexWrap: "wrap",
-            padding: "0",
-            gap: "1rem",
-          }}
-        >
-          {user.followedArtists.map((artist) => {
-            return (
-              <li key={artist.id}>
-                <img
-                  style={{ width: "100px", height: "100px" }}
-                  src={artist.image}
-                  alt=""
-                />
-                <p>{artist.name}</p>
-              </li>
-            );
-          })}
-        </ul>
+        <Category
+          title={"Followed Artists"}
+          description={"Check out your favorite artists"}
+          spotifyItems={user.followedArtists}
+        />
       </section>
       {/* Top Artists */}
       <section>
@@ -234,10 +206,10 @@ const HomePage = () => {
                 <li key={track.id}>
                   <img
                     style={{ width: "100px", height: "100px" }}
-                    src={track.albumImage}
+                    src={track.image}
                     alt=""
                   />
-                  <p>{track.trackName}</p>
+                  <p>{track.name}</p>
                   <p>{track.artistName}</p>
                 </li>
               );
@@ -260,10 +232,10 @@ const HomePage = () => {
                 <li key={track.id}>
                   <img
                     style={{ width: "100px", height: "100px" }}
-                    src={track.albumImage}
+                    src={track.image}
                     alt=""
                   />
-                  <p>{track.trackName}</p>
+                  <p>{track.name}</p>
                   <p>{track.artistName}</p>
                 </li>
               );
@@ -286,10 +258,10 @@ const HomePage = () => {
                 <li key={track.id}>
                   <img
                     style={{ width: "100px", height: "100px" }}
-                    src={track.albumImage}
+                    src={track.image}
                     alt=""
                   />
-                  <p>{track.trackName}</p>
+                  <p>{track.name}</p>
                   <p>{track.artistName}</p>
                 </li>
               );

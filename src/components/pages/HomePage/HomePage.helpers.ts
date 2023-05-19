@@ -1,9 +1,11 @@
 import { UserProfile } from "../../../models/UserProfile";
 
 export const initialUserProfile: UserProfile = {
-  display_name: "",
+  displayName: "",
   email: "",
   followers: 0,
+  href: "",
+  spotifyProfileUrl: "",
   id: "",
   profileImage: "",
   uri: "",

@@ -6,9 +6,14 @@ export interface SpotifyUserResponse {
   email: string;
   followers: Followers;
   href: string;
+  external_urls: ExternalUrls;
   id: string;
   images: Image[];
   uri: string;
+}
+
+export interface ExternalUrls {
+  spotify: string;
 }
 
 export interface Followers {
@@ -24,12 +29,14 @@ export interface Image {
 
 export const mapToUserProfile = (artist: SpotifyUserResponse): UserProfile => {
   return {
-    display_name: artist.display_name,
+    displayName: artist.display_name,
     email: artist.email,
     followers: artist.followers.total,
+    href: artist.href,
     id: artist.id,
     profileImage: artist.images[0].url,
     uri: artist.uri,
+    spotifyProfileUrl: artist.external_urls.spotify,
     topTracks: {
       shortTerm: [],
       mediumTerm: [],
