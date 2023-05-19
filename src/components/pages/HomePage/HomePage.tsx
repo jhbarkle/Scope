@@ -68,6 +68,7 @@ const HomePage = () => {
         console.log(
           " ✅ Successfully Updated User's Top Artists/Tracks and Followed Artist"
         );
+        setIsLoading(false);
       } catch (error) {
         console.log(errorDebugLogString, error);
         setIsError(true);
@@ -90,7 +91,6 @@ const HomePage = () => {
     };
 
     fetchProfileData();
-    setIsLoading(false);
   }, []);
 
   if (isError) {

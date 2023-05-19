@@ -1,6 +1,10 @@
 import { baseSpotifyUrl } from ".";
 import {
-  Artist,
+  ArtistAlbumsResponse,
+  Item,
+} from "../../dto/ArtistAlbumsResponse/ArtistAlbumsResponse";
+import { ArtistTrackResponse } from "../../dto/ArtistTrackResponse";
+import {
   FollowedArtistResponse,
   mapToSimpleArtistObject,
 } from "../../dto/FollowedArtistResponse/FollowedArtistResponse";
@@ -8,6 +12,11 @@ import {
   SpotifyUserResponse,
   mapToUserProfile,
 } from "../../dto/ProfileResponse/ProfileResponse";
+import {
+  SearchResponse,
+  mapToSingleSimpleArtistObject,
+} from "../../dto/SearchResponse/SearchResponse";
+import { Artist } from "../../dto/Shared/Shared";
 import { TopArtistsResponse } from "../../dto/TopArtistsResponse/TopArtistsResponse";
 import {
   TopTrackResponse,
@@ -70,104 +79,6 @@ export const fetchFollowedArtists = async (): Promise<SimpleArtistObject[]> => {
 
   // Return all retreived results as SimpleArtistObjects
   return mapToSimpleArtistObject(allRetreivedResults);
-
-  // Aquire token and check if it is expired
-  // await checkTokenExpiration();
-  // const token = getToken();
-
-  // // Fetch followed artists
-  // const result = await fetch(
-  //   `${baseSpotifyUrl}/me/following?type=artist&limit=50`,
-  //   {
-  //     method: "GET",
-  //     headers: { Authorization: `Bearer ${token}` },
-  //   }
-  // );
-
-  // // Convert result to JSON
-  // const jsonResult = await result.json();
-
-  // // Check if there was an error
-  // if (!jsonResult?.error) {
-  //   console.log(
-  //     "✅ Fetching Followed Artists for user was successful",
-  //     jsonResult
-  //   );
-  // } else {
-  //   console.log(
-  //     "❌ Fetching Followed Artists for user was NOT successful",
-  //     jsonResult
-  //   );
-  //   throw new Error("Fetching Followed Artists for user was not successful");
-  // }
-
-  // console.log("Followed Artists Response: ", jsonResult);
-
-  // // Check if there are more results to fetch
-  // let lastIdRetreivedForPagination = jsonResult.artists.next;
-
-  // // Store all retreived results
-  // let allRetreivedResults = jsonResult.artists.items;
-
-  // if (!lastIdRetreivedForPagination) {
-  //   console.log("No more Followed Artists to fetch");
-  // }
-
-  // while (lastIdRetreivedForPagination) {
-  //   console.log("Still Retreiving Followed Artists...");
-
-  //   // Fetch next results
-  //   const nextResult = await fetch(lastIdRetreivedForPagination, {
-  //     method: "GET",
-  //     headers: { Authorization: `Bearer ${token}` },
-  //   });
-
-  //   // Convert next results to JSON
-  //   const nextJsonResult = await nextResult.json();
-  //   console.log("Next JSON Result: ", nextJsonResult);
-
-  //   // Check if there was an error
-  //   if (!nextJsonResult?.error) {
-  //     console.log(
-  //       "✅ Fetching Followed Artists for user was successful",
-  //       nextJsonResult
-  //     );
-  //   } else {
-  //     console.log(
-  //       "❌ Fetching Followed Artists for user was NOT successful",
-  //       nextJsonResult
-  //     );
-  //     throw new Error("Fetching Followed Artists for user was not successful");
-  //   }
-
-  //   // Add next results to all retreived results
-  //   allRetreivedResults = [
-  //     ...allRetreivedResults,
-  //     ...nextJsonResult.artists.items,
-  //   ];
-
-  //   // Check if there are more results to fetch
-  //   lastIdRetreivedForPagination = nextJsonResult.artists.next;
-  // }
-
-  // // Return all retreived results
-  // // console.log(" 🎤 All Followed Artists: ", allRetreivedResults);
-
-  // const followedArtists: SimpleArtistObject[] = allRetreivedResults.map(
-  //   (artist: any) => {
-  //     return {
-  //       id: artist.id,
-  //       name: artist.name,
-  //       uri: artist.uri,
-  //       image: artist.images[0].url,
-  //       href: artist.href,
-  //       popularity: artist.popularity,
-  //       genres: artist.genres,
-  //     };
-  //   }
-  // );
-
-  // return followedArtists;
 };
 
 export const fetchTopArtists = async (
@@ -241,15 +152,25 @@ export const fetchTopTracks = async (
   return mapToSimpleTrackObject(allRetreivedResults);
 };
 
-export const search = async (token: string, artist: string): Promise<any> => {
-  const result = await fetch(
-    `${baseSpotifyUrl}/search?q=${artist}&type=artist&limit=1`,
-    {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    }
+export const search = async (artist: string): Promise<SimpleArtistObject> => {
+  console.log(` 🔍 Searching for ${artist}...`);
+
+  // Fetch profile data
+  const result = await get<SearchResponse>(
+    `${baseSpotifyUrl}/search?q=${artist}&type=artist&limit=1`
   );
-  return await result.json();
+
+  const resultArtist = result.artists.items[0];
+
+  if (!resultArtist) {
+    throw new Error("No artist found");
+  }
+
+  // Map Response to SimpleArtistObject
+  const returnedArtist: SimpleArtistObject =
+    mapToSingleSimpleArtistObject(resultArtist);
+
+  return returnedArtist;
 };
 
 export const fetchArtist = async (
@@ -263,51 +184,91 @@ export const fetchArtist = async (
   return await result.json();
 };
 
-export const fetchArtistAlbums = async (
-  token: string,
-  artistId: string
-): Promise<any> => {
-  const result = await fetch(
-    `${baseSpotifyUrl}/artists/${artistId}/albums?include_groups=single%2C+album&limit=50
-    `,
-    {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    }
+export const fetchArtistAlbums = async (artistId: string): Promise<Item[]> => {
+  console.log(` 🔍 Searching for Searched Artist's Albums...`);
+
+  // Fetch profile data
+  const result = await get<ArtistAlbumsResponse>(
+    `${baseSpotifyUrl}/artists/${artistId}/albums?limit=50`
   );
-  return await result.json();
+
+  const resultAlbums = result.items;
+
+  // Check if there are more results to fetch
+  let lastIdRetreivedForPagination = result.next;
+
+  // Store all retreived results
+  let allRetreivedResults: Item[] = result.items;
+
+  // Paginate through all results
+  while (lastIdRetreivedForPagination) {
+    console.log("Still Retreiving Albums From Artist...");
+
+    // Fetch next results
+    const result = await get<ArtistAlbumsResponse>(
+      lastIdRetreivedForPagination
+    );
+
+    // Add next results to all retreived results
+    allRetreivedResults = [...allRetreivedResults, ...result.items];
+
+    // Check if there are more results to fetch
+    lastIdRetreivedForPagination = result.next;
+  }
+
+  console.log("Albums from artist", allRetreivedResults);
+
+  // // Map Response to SimpleArtistObject
+  // const returnedArtist: SimpleArtistObject =
+  //   mapToSingleSimpleArtistObject(resultArtist);
+
+  // return returnedArtist;
+  return allRetreivedResults;
 };
 
-export const fetchConnectedArtists = async (
-  token: string,
-  artistId: string
-): Promise<any> => {
-  const result = await fetch(
-    `${baseSpotifyUrl}/artists/${artistId}/albums?include_groups=appears_on&limit=50
-    `,
-    {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
-  return await result.json();
-};
-
-export const fetchConnectedArtistsAlbums = async (
-  token: string,
+export const fetchTracksFromArtistAlbums = async (
   albumIds: string[]
 ): Promise<any> => {
-  const result = await fetch(
-    `${baseSpotifyUrl}/albums/?ids=${albumIds.join(",")}
-    `,
-    {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
+  let albumTracks: any[] = [];
+
+  for (let i = 0; i < albumIds.length; i++) {
+    const result = await get<ArtistTrackResponse>(
+      `${baseSpotifyUrl}/albums/${albumIds[i]}/tracks?limit=50`
+    );
+
+    // Check if there are more results to fetch
+    let lastIdRetreivedForPagination = result.next;
+
+    // Store all retreived results
+    // let allRetreivedResults: any[] = result.items;
+
+    // Paginate through all results
+    while (lastIdRetreivedForPagination) {
+      console.log("Still Retreiving All Tracks From Artist...");
+
+      // Fetch next results
+      const result = await get<ArtistAlbumsResponse>(
+        lastIdRetreivedForPagination
+      );
+
+      // // Add next results to all retreived results
+      // allRetreivedResults = [...allRetreivedResults, ...result.items];
+
+      albumTracks = [...albumTracks, ...result.items];
+
+      // Check if there are more results to fetch
+      lastIdRetreivedForPagination = result.next;
     }
-  );
-  return await result.json();
+
+    albumTracks.push(result.items);
+  }
+
+  console.log("Finished Fetching All Tracks From Artist...", albumTracks);
+
+  return "";
 };
 
+// =============================================== NOT USED ===================================================
 export const fetchArtistTopTracks = async (
   token: string,
   artistId: string

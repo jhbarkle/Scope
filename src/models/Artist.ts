@@ -10,8 +10,19 @@ export type SimpleArtistObject = {
   uri: string;
 };
 
+export type SearchedArtistObject = {
+  name: string;
+  id: string;
+  genres: string[];
+  href: string;
+  image: string;
+  popularity: number;
+  uri: string;
+  connectedArtists: ConnectedArtist[];
+};
+
 export type ConnectedArtist = {
-  track: SimpleTrackObject;
+  trackName: string;
   artist: SimpleArtistObject;
   image: string;
   sampleTrackURL: string;

@@ -1,4 +1,5 @@
 import { SimpleTrackObject } from "../../models/Track";
+import { Image } from "../Shared/Shared";
 
 export interface TopTrackResponse {
   items: Track[];
@@ -21,18 +22,12 @@ export interface Track {
   uri: string;
 }
 
-export interface Album {
+interface Album {
   images: Image[];
   name: string;
 }
 
-export interface Image {
-  height: number;
-  url: string;
-  width: number;
-}
-
-export interface Artist {
+interface Artist {
   name: string;
 }
 

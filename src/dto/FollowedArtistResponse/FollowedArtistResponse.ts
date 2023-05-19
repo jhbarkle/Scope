@@ -1,4 +1,5 @@
 import { SimpleArtistObject } from "../../models/Artist";
+import { Artist } from "../Shared/Shared";
 
 export interface FollowedArtistResponse {
   artists: Artists;
@@ -9,22 +10,6 @@ export interface Artists {
   next: string;
   total: number;
   items: Artist[];
-}
-
-export interface Artist {
-  genres: string[];
-  href: string;
-  id: string;
-  images: Image[];
-  name: string;
-  popularity: number;
-  uri: string;
-}
-
-export interface Image {
-  url: string;
-  height: number;
-  width: number;
 }
 
 export const mapToSimpleArtistObject = (

@@ -1,4 +1,5 @@
 import { UserProfile } from "../../models/UserProfile";
+import { ExternalUrls, Followers, Image } from "../Shared/Shared";
 
 export interface SpotifyUserResponse {
   country: string;
@@ -10,21 +11,6 @@ export interface SpotifyUserResponse {
   id: string;
   images: Image[];
   uri: string;
-}
-
-export interface ExternalUrls {
-  spotify: string;
-}
-
-export interface Followers {
-  href: null;
-  total: number;
-}
-
-export interface Image {
-  height: null;
-  url: string;
-  width: null;
 }
 
 export const mapToUserProfile = (artist: SpotifyUserResponse): UserProfile => {

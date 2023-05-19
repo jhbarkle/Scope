@@ -9,3 +9,10 @@ export type SimpleTrackObject = {
   uri: string;
   artistName: string;
 };
+
+export type ConnectedTrack = {
+  name: string;
+  artists: string[];
+  image: string[];
+  previewUrl: string;
+};

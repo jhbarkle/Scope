@@ -29,7 +29,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
       <button
         disabled={!searchQueryEntered}
         onClick={() => {
-          setSearchState({ ...searchState, isSearching: true });
+          setSearchState({
+            ...searchState,
+            isSearching: true,
+            searchQueryFromUser: searchQuery,
+          });
           console.log(" 🔍 Beginning Search...");
         }}
       >
