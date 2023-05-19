@@ -13,12 +13,18 @@ import GenericError from "../../molecules/GenericError/GenericError";
 import Profile from "../../molecules/Profile/Profile";
 import Category from "../../molecules/Category/Category";
 import FilterableCategory from "../../molecules/FilterableCategory/FilterableCategory";
+import SearchBar from "../../molecules/SearchBar/SearchBar";
+import SearchPage from "../SearchPage/SearchPage";
+import { SearchState, defaultSearchState } from "../../../models/SearchState";
+
+const errorDebugLogString = "❌==========Error==========❌";
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [user, setUser] = useState<UserProfile>(initialUserProfile);
-  const errorDebugLogString = "❌==========Error==========❌";
+  const [searchState, setSearchState] =
+    useState<SearchState>(defaultSearchState);
 
   useEffect(() => {
     // Fetch User's Followed Artists, Top Artists, and Top Tracks from Spotify
@@ -91,6 +97,12 @@ const HomePage = () => {
     return <GenericError setIsError={setIsError} />;
   }
 
+  if (searchState.isSearching) {
+    return (
+      <SearchPage searchState={searchState} setSearchState={setSearchState} />
+    );
+  }
+
   return isLoading ? (
     <div id={styles.loading}>
       <img src="/loading.gif" alt="Loading" />
@@ -98,16 +110,16 @@ const HomePage = () => {
   ) : (
     // No error and not loading
     <div id={styles.home_wrapper}>
+      {/* Search Bar */}
+      <SearchBar searchState={searchState} setSearchState={setSearchState} />
       {/* User Profile Info */}
       <Profile profile={user} />
       {/* Followed Artists */}
-      <section>
-        <Category
-          title={"Followed Artists"}
-          description={"Check out your favorite artists"}
-          spotifyItems={user.followedArtists}
-        />
-      </section>
+      <Category
+        title={"Followed Artists"}
+        description={"Check out your favorite artists"}
+        spotifyItems={user.followedArtists}
+      />
       {/* Top Artists */}
       <FilterableCategory
         title={"Top Artists"}
