@@ -12,6 +12,7 @@ import { initialUserProfile } from "./HomePage.helpers";
 import GenericError from "../../molecules/GenericError/GenericError";
 import Profile from "../../molecules/Profile/Profile";
 import Category from "../../molecules/Category/Category";
+import FilterableCategory from "../../molecules/FilterableCategory/FilterableCategory";
 
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -108,167 +109,19 @@ const HomePage = () => {
         />
       </section>
       {/* Top Artists */}
-      <section>
-        <h1>Top Artists</h1>
-        <section>
-          <h3>Last 4 Weeks</h3>
-          <ul
-            style={{
-              listStyle: "none",
-              display: "flex",
-              flexWrap: "wrap",
-              padding: "0",
-              gap: "1rem",
-            }}
-          >
-            {user.topArtists.shortTerm.map((artist) => {
-              return (
-                <li key={artist.id}>
-                  <img
-                    style={{ width: "100px", height: "100px" }}
-                    src={artist.image}
-                    alt=""
-                  />
-                  <p>{artist.name}</p>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-        <section>
-          <h3>Last 6 Months</h3>
-          <ul
-            style={{
-              listStyle: "none",
-              display: "flex",
-              flexWrap: "wrap",
-              padding: "0",
-              gap: "1rem",
-            }}
-          >
-            {user.topArtists.mediumTerm.map((artist) => {
-              return (
-                <li key={artist.id}>
-                  <img
-                    style={{ width: "100px", height: "100px" }}
-                    src={artist.image}
-                    alt=""
-                  />
-                  <p>{artist.name}</p>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-        <section>
-          <h3>All Time</h3>
-          <ul
-            style={{
-              listStyle: "none",
-              display: "flex",
-              flexWrap: "wrap",
-              padding: "0",
-              gap: "1rem",
-            }}
-          >
-            {user.topArtists.longTerm.map((artist) => {
-              return (
-                <li key={artist.id}>
-                  <img
-                    style={{ width: "100px", height: "100px" }}
-                    src={artist.image}
-                    alt=""
-                  />
-                  <p>{artist.name}</p>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      </section>
+      <FilterableCategory
+        title={"Top Artists"}
+        description={"Check out your top Artits from different points in time."}
+        filterableCategoryItems={user.topArtists}
+      />
 
       {/* Top Tracks */}
-      <section>
-        <h1>Top Tracks</h1>
-        <section>
-          <h3>Last 4 Weeks</h3>
-          <ul
-            style={{
-              listStyle: "none",
-              display: "flex",
-              flexWrap: "wrap",
-              padding: "0",
-              gap: "1rem",
-            }}
-          >
-            {user.topTracks.shortTerm.map((track) => {
-              return (
-                <li key={track.id}>
-                  <img
-                    style={{ width: "100px", height: "100px" }}
-                    src={track.image}
-                    alt=""
-                  />
-                  <p>{track.name}</p>
-                  <p>{track.artistName}</p>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-        <section>
-          <h3>Last 6 Months</h3>
-          <ul
-            style={{
-              listStyle: "none",
-              display: "flex",
-              flexWrap: "wrap",
-              padding: "0",
-              gap: "1rem",
-            }}
-          >
-            {user.topTracks.mediumTerm.map((track) => {
-              return (
-                <li key={track.id}>
-                  <img
-                    style={{ width: "100px", height: "100px" }}
-                    src={track.image}
-                    alt=""
-                  />
-                  <p>{track.name}</p>
-                  <p>{track.artistName}</p>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-        <section>
-          <h3>All Time</h3>
-          <ul
-            style={{
-              listStyle: "none",
-              display: "flex",
-              flexWrap: "wrap",
-              padding: "0",
-              gap: "1rem",
-            }}
-          >
-            {user.topTracks.mediumTerm.map((track) => {
-              return (
-                <li key={track.id}>
-                  <img
-                    style={{ width: "100px", height: "100px" }}
-                    src={track.image}
-                    alt=""
-                  />
-                  <p>{track.name}</p>
-                  <p>{track.artistName}</p>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
-      </section>
+
+      <FilterableCategory
+        title={"Top Tracks"}
+        description={"Check out your top Tracks from different points in time."}
+        filterableCategoryItems={user.topTracks}
+      />
       <section id={styles.aside_content}></section>
     </div>
   );

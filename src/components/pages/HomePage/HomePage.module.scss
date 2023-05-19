@@ -3,4 +3,8 @@
   background-color: #d6d1d1;
   height: fit-content;
   padding: 50px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
 }
