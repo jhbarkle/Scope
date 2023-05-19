@@ -18,12 +18,10 @@ export const authorizeAndGatherUserData = async () => {
     const data = localStorage.getItem("tokenObject");
     // Check if we have already generated an access token
     if (!data) {
-      console.log("Token has not been gathered yet.");
-      console.log("Gathering Access Token...");
+      console.log(" ⭐️ Token has not been gathered yet.");
+      console.log(" ⭐️ ➡️ Gathering Access Token...");
       await getAccessToken(CLIENT_ID, code);
-      console.log("Access Token has been gathered.");
-    } else {
-      console.log("User Data and Access Token already gathered.");
+      console.log(" ✅ ⭐️Access Token has been gathered.");
     }
   }
 };

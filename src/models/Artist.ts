@@ -3,7 +3,6 @@ import { SimpleTrackObject } from "./Track";
 export type SimpleArtistObject = {
   name: string;
   id: string;
-  followers: number;
   genres: string[];
   href: string;
   image: string;

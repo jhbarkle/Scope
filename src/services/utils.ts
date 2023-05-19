@@ -69,10 +69,8 @@ export const generateCodeChallenge = async (codeVerifier: string) => {
 export const checkTokenExpiration = async () => {
   if (isTokenExpired()) {
     // Get Refresh Token
-    console.log("Token has expired, refreshing...");
+    console.log(" ⭐️ Token has expired, refreshing...");
     await refreshToken();
-    console.log("Token refreshed.");
-  } else {
-    console.log("Token has not expired yet.");
+    console.log(" ⭐️ Token refreshed.");
   }
 };

@@ -18,17 +18,20 @@ const HomePage = () => {
   const errorDebugLogString = "❌==========Error==========❌";
 
   useEffect(() => {
+    // Fetch User's Followed Artists, Top Artists, and Top Tracks from Spotify
     const fetchUsersSpotifyData = async (profile: UserProfile) => {
-      // Fetch User's Followed Artists, Top Artists, and Top Tracks from Spotify
       try {
+        console.log(
+          " ➡️ Fetching User's Followed Artists, Top Artists, and Top Tracks from Spotify..."
+        );
         const [
           followedArtists,
-          shortRangeTopArtists,
-          mediumRangeTopArtists,
-          longRangeTopArists,
-          shortRangeTopTracks,
-          mediumRangeTopTracks,
-          longRangeTopTracks,
+          shortTimeRangeTopArtists,
+          mediumTimeRangeTopArtists,
+          longTimeRangeTopArtists,
+          shortTimeRangeTopTracks,
+          mediumTimeRangeTopTracks,
+          longTimeRangeTopTracks,
         ] = await Promise.all([
           fetchFollowedArtists(),
           fetchTopArtists("short_term"),
@@ -42,14 +45,14 @@ const HomePage = () => {
           ...profile,
           followedArtists,
           topArtists: {
-            shortTerm: shortRangeTopArtists,
-            mediumTerm: mediumRangeTopArtists,
-            longTerm: longRangeTopArists,
+            shortTerm: shortTimeRangeTopArtists,
+            mediumTerm: mediumTimeRangeTopArtists,
+            longTerm: longTimeRangeTopArtists,
           },
           topTracks: {
-            shortTerm: shortRangeTopTracks,
-            mediumTerm: mediumRangeTopTracks,
-            longTerm: longRangeTopTracks,
+            shortTerm: shortTimeRangeTopTracks,
+            mediumTerm: mediumTimeRangeTopTracks,
+            longTerm: longTimeRangeTopTracks,
           },
         };
         setUser(newUser);
@@ -67,8 +70,7 @@ const HomePage = () => {
       // Authorize User
       await authorizeAndGatherUserData();
 
-      // Fetch User's Profile
-      console.log("Fetching profile data...");
+      // Fetch User's Profile from Spotify
       await fetchProfile()
         .then(async (profile) => {
           await fetchUsersSpotifyData(profile);
@@ -206,6 +208,89 @@ const HomePage = () => {
                     alt=""
                   />
                   <p>{artist.name}</p>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      </section>
+
+      {/* Top Tracks */}
+      <section>
+        <h1>Top Tracks</h1>
+        <section>
+          <h3>Last 4 Weeks</h3>
+          <ul
+            style={{
+              listStyle: "none",
+              display: "flex",
+              flexWrap: "wrap",
+              padding: "0",
+              gap: "1rem",
+            }}
+          >
+            {user.topTracks.shortTerm.map((track) => {
+              return (
+                <li key={track.id}>
+                  <img
+                    style={{ width: "100px", height: "100px" }}
+                    src={track.albumImage}
+                    alt=""
+                  />
+                  <p>{track.trackName}</p>
+                  <p>{track.artistName}</p>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+        <section>
+          <h3>Last 6 Months</h3>
+          <ul
+            style={{
+              listStyle: "none",
+              display: "flex",
+              flexWrap: "wrap",
+              padding: "0",
+              gap: "1rem",
+            }}
+          >
+            {user.topTracks.mediumTerm.map((track) => {
+              return (
+                <li key={track.id}>
+                  <img
+                    style={{ width: "100px", height: "100px" }}
+                    src={track.albumImage}
+                    alt=""
+                  />
+                  <p>{track.trackName}</p>
+                  <p>{track.artistName}</p>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+        <section>
+          <h3>All Time</h3>
+          <ul
+            style={{
+              listStyle: "none",
+              display: "flex",
+              flexWrap: "wrap",
+              padding: "0",
+              gap: "1rem",
+            }}
+          >
+            {user.topTracks.mediumTerm.map((track) => {
+              return (
+                <li key={track.id}>
+                  <img
+                    style={{ width: "100px", height: "100px" }}
+                    src={track.albumImage}
+                    alt=""
+                  />
+                  <p>{track.trackName}</p>
+                  <p>{track.artistName}</p>
                 </li>
               );
             })}

@@ -1,4 +1,5 @@
 import { SimpleArtistObject } from "./Artist";
+import { SimpleTrackObject } from "./Track";
 
 export type UserProfile = {
   display_name: string;
@@ -7,10 +8,10 @@ export type UserProfile = {
   id: string;
   profileImage: string;
   uri: string;
-  topAlbums: {
-    shortTerm: SimpleArtistObject[];
-    mediumTerm: SimpleArtistObject[];
-    longTerm: SimpleArtistObject[];
+  topTracks: {
+    shortTerm: SimpleTrackObject[];
+    mediumTerm: SimpleTrackObject[];
+    longTerm: SimpleTrackObject[];
   };
   topArtists: {
     shortTerm: SimpleArtistObject[];
