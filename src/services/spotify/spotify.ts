@@ -1,3 +1,4 @@
+import { Connect } from "vite";
 import { baseSpotifyUrl } from ".";
 import {
   ArtistAlbumsResponse,
@@ -8,6 +9,10 @@ import {
   FollowedArtistResponse,
   mapToSimpleArtistObject,
 } from "../../dto/FollowedArtistResponse/FollowedArtistResponse";
+import {
+  GetSeveralAlbumsResponse,
+  mapAlbumsToConnectedArtists,
+} from "../../dto/GetSeveralAlbumsResponse/GetSeveralAlbumsResponse";
 import {
   SpotifyUserResponse,
   mapToUserProfile,
@@ -23,7 +28,11 @@ import {
   Track,
   mapToSimpleTrackObject,
 } from "../../dto/TopTracksResponse/TopTracksResponse";
-import { SimpleArtistObject } from "../../models/Artist";
+import {
+  ConnectedArtist,
+  ConnectedArtistObject,
+  SimpleArtistObject,
+} from "../../models/Artist";
 import { SimpleTrackObject } from "../../models/Track";
 import { UserProfile } from "../../models/UserProfile";
 import { get } from "./network";
@@ -186,6 +195,22 @@ export const fetchArtist = async (
   return await result.json();
 };
 
+export const filterAlbums = (items: Item[]): Item[] => {
+  const filteredAlbums = items.filter((item) => item.album_type === "single");
+  const itemsWithoutSingles = items.filter(
+    (item) => item.album_type !== "single"
+  );
+  const filteredSingleAlbumsWithMultipleArtists = filteredAlbums.filter(
+    (single) => single.artists.length > 1
+  );
+
+  return [...itemsWithoutSingles, ...filteredSingleAlbumsWithMultipleArtists];
+};
+
+export const getAppearances = (items: Item[]): Item[] => {
+  return items.filter((item) => item.album_group === "appears_on");
+};
+
 export const fetchArtistAlbums = async (artistId: string): Promise<Item[]> => {
   console.log(` 🔍 Searching for Searched Artist's Albums...`);
 
@@ -193,8 +218,6 @@ export const fetchArtistAlbums = async (artistId: string): Promise<Item[]> => {
   const result = await get<ArtistAlbumsResponse>(
     `${baseSpotifyUrl}/artists/${artistId}/albums?limit=50`
   );
-
-  const resultAlbums = result.items;
 
   // Check if there are more results to fetch
   let lastIdRetreivedForPagination = result.next;
@@ -217,17 +240,20 @@ export const fetchArtistAlbums = async (artistId: string): Promise<Item[]> => {
     // Check if there are more results to fetch
     lastIdRetreivedForPagination = result.next;
   }
-
-  console.log("Albums from artist", allRetreivedResults);
+  const filteredAlbums = filterAlbums(allRetreivedResults);
+  // console.log("All Appears On Albums", getAppearances(allRetreivedResults));
+  // console.log("Full Albums from artist", allRetreivedResults);
+  // console.log("Filtered Albums from artist", filteredAlbums);
 
   // // Map Response to SimpleArtistObject
   // const returnedArtist: SimpleArtistObject =
   //   mapToSingleSimpleArtistObject(resultArtist);
 
   // return returnedArtist;
-  return allRetreivedResults;
+  return filteredAlbums;
 };
 
+// Not used
 export const fetchTracksFromArtistAlbums = async (
   albumIds: string[]
 ): Promise<any> => {
@@ -268,6 +294,48 @@ export const fetchTracksFromArtistAlbums = async (
   console.log("Finished Fetching All Tracks From Artist...", albumTracks);
 
   return "";
+};
+
+export const createConnectedArtists = async (
+  items: ConnectedArtistObject[]
+) => {
+  return items.filter((item) => item.tracks.items.map.length > 0);
+};
+
+export const fetchAlbums = async (
+  albumIds: string[]
+): Promise<ConnectedArtistObject[]> => {
+  // Variable to keep track of the starting index
+  let startIndex = 0;
+  let allAlbums: any[] = [];
+
+  // Loop until the startIndex reaches the end of the array
+  while (startIndex < albumIds.length) {
+    // Get the next 20 elements using array slicing
+    const nextElements = albumIds.slice(startIndex, startIndex + 20 - 1);
+
+    // Do something with the nextElements
+    console.log(nextElements);
+
+    const url = `${baseSpotifyUrl}/albums?ids=${nextElements.join(",")}`;
+
+    // Fetch profile data
+    const result = await get<GetSeveralAlbumsResponse>(
+      `${baseSpotifyUrl}/albums?ids=${nextElements.join(",")}`
+    );
+
+    allAlbums = [...allAlbums, ...result.albums];
+
+    // Update the startIndex for the next iteration
+    startIndex += 20;
+  }
+
+  const obn = mapAlbumsToConnectedArtists(allAlbums);
+  createConnectedArtists(obn);
+
+  console.log("All Albums", obn);
+
+  return obn;
 };
 
 // =============================================== NOT USED ===================================================

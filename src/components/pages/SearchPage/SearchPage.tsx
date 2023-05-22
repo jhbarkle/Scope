@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
 import { SearchState } from "../../../models/SearchState";
 import {
+  fetchAlbums,
   fetchArtistAlbums,
-  fetchTracksFromArtistAlbums,
   search,
 } from "../../../services/spotify/spotify";
 import styles from "./SearchPage.module.scss";
-import { SimpleArtistObject } from "../../../models/Artist";
+import {
+  ConnectedArtistObject,
+  SimpleArtistObject,
+} from "../../../models/Artist";
+import ArtistInfo from "../../molecules/ArtistInfo/ArtistInfo";
+import ConnectedArtistsCategory from "../../molecules/ConnectedArtistsCategory/ConnectedArtistsCategory";
 
 interface SearchPageProps {
   searchState: SearchState;
@@ -20,26 +25,34 @@ const SearchPage: React.FC<SearchPageProps> = ({
   const [artist, setArtist] = useState<SimpleArtistObject | undefined>(
     undefined
   );
-  console.log("Current Search State: ", searchState);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loadingMessage, setLoadingMessage] = useState<string>(
+    `Searching for artist ${searchState.searchQueryFromUser}... `
+  );
+  const [connectedArtists, setConnectedArtists] = useState<
+    ConnectedArtistObject[]
+  >([]);
 
   useEffect(() => {
-    // START HERE
-    // There are too many albums that are being returned from the artist
-    // It is taking too long to query all of the albums and then get the tracks from the albums
-    // Maybe before we get tracks we should filter the albums to only get the ones that are with another artist
-
     // Get Tracks from Artist Albums
     const getAllConnectedArtist = async (albums: any) => {
-      await fetchTracksFromArtistAlbums(albums);
+      setLoadingMessage(
+        `Getting all tracks for ${searchState.searchQueryFromUser}...`
+      );
+      await fetchAlbums(albums).then((tracks) => {
+        setConnectedArtists(tracks);
+        setIsLoading(false);
+      });
     };
 
     // Get Artist Albums
     const makeOtherCalls = async (artistId: string) => {
+      setLoadingMessage(
+        `Getting albums for ${searchState.searchQueryFromUser}...}`
+      );
       await fetchArtistAlbums(artistId).then((albums) => {
-        console.log("AlbumCount: ", albums.length);
         const albumIds = albums.map((album: any) => album.id);
-        console.log("Grabbing Tracks for: ", albumIds.length);
-        // getAllConnectedArtist(albumIds);
+        getAllConnectedArtist(albumIds);
       });
     };
 
@@ -50,6 +63,9 @@ const SearchPage: React.FC<SearchPageProps> = ({
         isLoading: true,
       });
       await search(searchState.searchQueryFromUser).then(async (artist) => {
+        setLoadingMessage(
+          `Searching for artist ${searchState.searchQueryFromUser}...`
+        );
         console.log("Artist: ", artist);
         setArtist(artist);
         setSearchState({ ...searchState, artist: artist });
@@ -60,15 +76,14 @@ const SearchPage: React.FC<SearchPageProps> = ({
 
     fetchSearchResults();
   }, []);
-  return searchState.isLoading ? (
+  return isLoading ? (
     <div id={styles.loading}>
       <img src="/loading.gif" alt="Loading" />
+      <h1>{loadingMessage}</h1>
     </div>
   ) : (
     <div className={styles.search_page_container}>
       <h1>Search Page</h1>
-      <h2>{artist?.name}</h2>
-      <img src={artist?.image} alt={artist?.name} />
       <button
         onClick={() => {
           setSearchState({ ...searchState, isSearching: false });
@@ -77,6 +92,14 @@ const SearchPage: React.FC<SearchPageProps> = ({
       >
         Back
       </button>
+      <ArtistInfo artistName={artist?.name ?? ""} image={artist?.image ?? ""} />
+      {connectedArtists && (
+        <ConnectedArtistsCategory
+          title={"Connected Through Music"}
+          description={"Hover over images to play."}
+          spotifyItems={connectedArtists}
+        />
+      )}
     </div>
   );
 };

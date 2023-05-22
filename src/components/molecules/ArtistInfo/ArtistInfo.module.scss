@@ -1,0 +1,13 @@
+.artist_info_container {
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
+  width: 100%;
+  gap: 20px;
+  border: 1px solid black;
+
+  & > img {
+    width: 200px;
+    height: 200px;
+  }
+}

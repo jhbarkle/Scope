@@ -1,3 +1,4 @@
+import { Tracks } from "../dto/GetSeveralAlbumsResponse/GetSeveralAlbumsResponse";
 import { SimpleTrackObject } from "./Track";
 
 export type SimpleArtistObject = {
@@ -18,13 +19,34 @@ export type SearchedArtistObject = {
   image: string;
   popularity: number;
   uri: string;
-  connectedArtists: ConnectedArtist[];
+  connectedArtists: ConnectedArtistObject[];
 };
 
-export type ConnectedArtist = {
+export type ConnectedArtistObject = {
   trackName: string;
-  artist: SimpleArtistObject;
+  artists: BaseArtist[];
+  id: string;
   image: string;
   sampleTrackURL: string;
   href: string;
+  tracks: Tracks;
+};
+
+export type BaseArtist = {
+  name: string;
+  image: string;
+  id: string;
+  href: string;
+};
+
+export type ConnectedArtist = {
+  artistName: string;
+  artistImage: string;
+  artistID: string;
+  connectedTracks: ConnectedArtist[];
+};
+
+export type ConnectedTrack = {
+  trackName: string;
+  previewURL: string;
 };
