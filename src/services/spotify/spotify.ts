@@ -1,4 +1,3 @@
-import { Connect } from "vite";
 import { baseSpotifyUrl } from ".";
 import {
   ArtistAlbumsResponse,
@@ -28,11 +27,7 @@ import {
   Track,
   mapToSimpleTrackObject,
 } from "../../dto/TopTracksResponse/TopTracksResponse";
-import {
-  ConnectedArtist,
-  ConnectedArtistObject,
-  SimpleArtistObject,
-} from "../../models/Artist";
+import { ConnectedArtistObject, SimpleArtistObject } from "../../models/Artist";
 import { SimpleTrackObject } from "../../models/Track";
 import { UserProfile } from "../../models/UserProfile";
 import { get } from "./network";
@@ -85,8 +80,6 @@ export const fetchFollowedArtists = async (): Promise<SimpleArtistObject[]> => {
   console.log(
     " ✅ Fetching Followed Artists was successful, returning followed artists"
   );
-
-  console.log("results my man", allRetreivedResults);
 
   // Return all retreived results as SimpleArtistObjects
   return mapToSimpleArtistObject(allRetreivedResults);
@@ -195,20 +188,61 @@ export const fetchArtist = async (
   return await result.json();
 };
 
-export const filterAlbums = (items: Item[]): Item[] => {
-  const filteredAlbums = items.filter((item) => item.album_type === "single");
-  const itemsWithoutSingles = items.filter(
-    (item) => item.album_type !== "single"
-  );
-  const filteredSingleAlbumsWithMultipleArtists = filteredAlbums.filter(
-    (single) => single.artists.length > 1
+export const filterAlbums = (items: Item[], originalArtist: string): Item[] => {
+  // const filteredAlbums = items.filter((item) => item.album_type === "single");
+  // const itemsWithoutSingles = items.filter(
+  //   (item) => item.album_type !== "single"
+  // );
+  // const filteredSingleAlbumsWithMultipleArtists = filteredAlbums.filter(
+  //   (single) => single.artists.length > 1
+  // );
+
+  console.log("Original Album Count: ", items.length);
+
+  const removedCompilations = items.filter(
+    (item) => item.album_type !== "compilation"
   );
 
-  return [...itemsWithoutSingles, ...filteredSingleAlbumsWithMultipleArtists];
-};
+  console.log(
+    "Album Count aftering removing Compilations: ",
+    removedCompilations.length
+  );
+  const removedVariousArtists = removedCompilations.filter(
+    (item) => item.artists[0].name !== "Various Artists"
+  );
 
-export const getAppearances = (items: Item[]): Item[] => {
-  return items.filter((item) => item.album_group === "appears_on");
+  console.log(
+    "Album Count aftering removing Various Artists: ",
+    removedVariousArtists.length
+  );
+
+  const removingAlbumsMadeByOriginalArtist: Item[] = [];
+
+  removedVariousArtists.map((album) => {
+    if (album.artists.length > 1) {
+      removingAlbumsMadeByOriginalArtist.push(album);
+    } else if (album.artists[0].id !== originalArtist) {
+      removingAlbumsMadeByOriginalArtist.push(album);
+    }
+  });
+
+  const test: string[] = [];
+  const test2: Item[] = [];
+
+  removingAlbumsMadeByOriginalArtist.map((album) => {
+    if (!test.includes(album.name)) {
+      test.push(album.name);
+      test2.push(album);
+    } else {
+      console.log("Duplicate Album: ", album.name);
+    }
+  });
+
+  console.log("Test Count: ", removingAlbumsMadeByOriginalArtist.length);
+
+  return test2.filter(
+    (item) => !item.name.toLowerCase().includes("instrumental")
+  );
 };
 
 export const fetchArtistAlbums = async (artistId: string): Promise<Item[]> => {
@@ -216,7 +250,7 @@ export const fetchArtistAlbums = async (artistId: string): Promise<Item[]> => {
 
   // Fetch profile data
   const result = await get<ArtistAlbumsResponse>(
-    `${baseSpotifyUrl}/artists/${artistId}/albums?limit=50`
+    `${baseSpotifyUrl}/artists/${artistId}/albums??include_groups=single%2Cappears_on%2Calbum&limit=50`
   );
 
   // Check if there are more results to fetch
@@ -240,10 +274,13 @@ export const fetchArtistAlbums = async (artistId: string): Promise<Item[]> => {
     // Check if there are more results to fetch
     lastIdRetreivedForPagination = result.next;
   }
-  const filteredAlbums = filterAlbums(allRetreivedResults);
+  const filteredAlbums = filterAlbums(allRetreivedResults, artistId);
   // console.log("All Appears On Albums", getAppearances(allRetreivedResults));
-  // console.log("Full Albums from artist", allRetreivedResults);
-  // console.log("Filtered Albums from artist", filteredAlbums);
+  console.log("Full Albums from artist", allRetreivedResults);
+  console.log(
+    "Filtered Albums from artist",
+    filterAlbums(allRetreivedResults, artistId)
+  );
 
   // // Map Response to SimpleArtistObject
   // const returnedArtist: SimpleArtistObject =
@@ -251,6 +288,11 @@ export const fetchArtistAlbums = async (artistId: string): Promise<Item[]> => {
 
   // return returnedArtist;
   return filteredAlbums;
+};
+
+export type ArtistWithName = {
+  name: string;
+  trackUrl: string;
 };
 
 // Not used
@@ -296,13 +338,7 @@ export const fetchTracksFromArtistAlbums = async (
   return "";
 };
 
-export const createConnectedArtists = async (
-  items: ConnectedArtistObject[]
-) => {
-  return items.filter((item) => item.tracks.items.map.length > 0);
-};
-
-export const fetchAlbums = async (
+export const fetchFullAlbums = async (
   albumIds: string[]
 ): Promise<ConnectedArtistObject[]> => {
   // Variable to keep track of the starting index
@@ -313,11 +349,6 @@ export const fetchAlbums = async (
   while (startIndex < albumIds.length) {
     // Get the next 20 elements using array slicing
     const nextElements = albumIds.slice(startIndex, startIndex + 20 - 1);
-
-    // Do something with the nextElements
-    console.log(nextElements);
-
-    const url = `${baseSpotifyUrl}/albums?ids=${nextElements.join(",")}`;
 
     // Fetch profile data
     const result = await get<GetSeveralAlbumsResponse>(
@@ -331,110 +362,8 @@ export const fetchAlbums = async (
   }
 
   const obn = mapAlbumsToConnectedArtists(allAlbums);
-  createConnectedArtists(obn);
 
   console.log("All Albums", obn);
 
   return obn;
-};
-
-// =============================================== NOT USED ===================================================
-export const fetchArtistTopTracks = async (
-  token: string,
-  artistId: string
-): Promise<any> => {
-  const result = await fetch(
-    `${baseSpotifyUrl}/artists/${artistId}/top-tracks
-    `,
-    {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
-  return await result.json();
-};
-
-export const fetchRelatedArtists = async (
-  token: string,
-  artistId: string
-): Promise<any> => {
-  const result = await fetch(
-    `${baseSpotifyUrl}/artists/${artistId}/related-artists
-    `,
-    {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
-  return await result.json();
-};
-
-// PUT API Calls
-export const unFollowArtist = async (
-  token: string,
-  artistId: string
-): Promise<any> => {
-  const result = await fetch(`${baseSpotifyUrl}/me/following`, {
-    method: "PUT",
-    headers: { Authorization: `Bearer ${token}` },
-    body: JSON.stringify({
-      ids: [artistId],
-    }),
-  });
-  return await result.json();
-};
-
-export const followArtist = async (
-  token: string,
-  artistId: string
-): Promise<any> => {
-  const result = await fetch(`${baseSpotifyUrl}/me/following`, {
-    method: "PUT",
-    headers: { Authorization: `Bearer ${token}` },
-    body: JSON.stringify({
-      ids: [artistId],
-    }),
-  });
-  return await result.json();
-};
-
-export const createPlaylist = async (
-  token: string,
-  name: string,
-  description: string,
-  isPublic: boolean,
-  userId: string
-): Promise<any> => {
-  const result = await fetch(`${baseSpotifyUrl}/users/${userId}/playlists`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-    body: JSON.stringify({
-      name: name,
-      description: description,
-      public: isPublic,
-    }),
-  });
-
-  // need to get spotify id of playlist
-  return await result.json();
-};
-
-export const addItemsToPlaylist = async (
-  token: string,
-  playlistId: string,
-  uris: string[]
-): Promise<any> => {
-  const result = await fetch(
-    `${baseSpotifyUrl}/playlists/${playlistId}/tracks`,
-    {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: JSON.stringify({
-        uris: uris,
-      }),
-    }
-  );
-
-  // need to get spotify id of playlist
-  return await result.json();
 };

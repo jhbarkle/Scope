@@ -24,9 +24,9 @@ const ConnectedArtistsCategory: React.FC<ConnectedArtistsCategoryProps> = ({
       <h2 className={styles.remove_spacing}>{title}</h2>
       <p className={styles.remove_spacing}>{description}</p>
       <section id={styles.item_section_container}>
-        {spotifyItems.map((item) => {
+        {spotifyItems.map((item, index) => {
           return (
-            <div id={styles.item_container} key={item.id}>
+            <div id={styles.item_container} key={item.id + index}>
               <img id={styles.item_image} src={item.image} alt="" />
               <p className={styles.remove_spacing}>{item.trackName}</p>
               <ul>

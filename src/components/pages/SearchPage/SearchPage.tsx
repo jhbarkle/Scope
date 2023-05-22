@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { SearchState } from "../../../models/SearchState";
 import {
-  fetchAlbums,
+  fetchFullAlbums,
   fetchArtistAlbums,
   search,
 } from "../../../services/spotify/spotify";
@@ -39,7 +39,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
       setLoadingMessage(
         `Getting all tracks for ${searchState.searchQueryFromUser}...`
       );
-      await fetchAlbums(albums).then((tracks) => {
+      await fetchFullAlbums(albums).then((tracks) => {
         setConnectedArtists(tracks);
         setIsLoading(false);
       });
