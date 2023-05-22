@@ -77,6 +77,8 @@ export const fetchFollowedArtists = async (): Promise<SimpleArtistObject[]> => {
     " ✅ Fetching Followed Artists was successful, returning followed artists"
   );
 
+  console.log("results my man", allRetreivedResults);
+
   // Return all retreived results as SimpleArtistObjects
   return mapToSimpleArtistObject(allRetreivedResults);
 };

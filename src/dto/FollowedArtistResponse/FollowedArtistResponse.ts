@@ -21,7 +21,7 @@ export const mapToSimpleArtistObject = (
         id: artist.id,
         name: artist.name,
         uri: artist.uri,
-        image: artist.images[0].url,
+        image: artist.images[0]?.url ?? "/icons/default-profile-image.png",
         href: artist.href,
         popularity: artist.popularity,
         genres: artist.genres,

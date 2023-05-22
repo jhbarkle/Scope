@@ -39,7 +39,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
         console.log("AlbumCount: ", albums.length);
         const albumIds = albums.map((album: any) => album.id);
         console.log("Grabbing Tracks for: ", albumIds.length);
-        getAllConnectedArtist(albumIds);
+        // getAllConnectedArtist(albumIds);
       });
     };
 
@@ -58,7 +58,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
       setSearchState({ ...searchState, isLoading: false });
     };
 
-    // fetchSearchResults();
+    fetchSearchResults();
   }, []);
   return searchState.isLoading ? (
     <div id={styles.loading}>
