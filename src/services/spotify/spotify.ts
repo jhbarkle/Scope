@@ -189,36 +189,17 @@ export const fetchArtist = async (
 };
 
 export const filterAlbums = (items: Item[], originalArtist: string): Item[] => {
-  // const filteredAlbums = items.filter((item) => item.album_type === "single");
-  // const itemsWithoutSingles = items.filter(
-  //   (item) => item.album_type !== "single"
-  // );
-  // const filteredSingleAlbumsWithMultipleArtists = filteredAlbums.filter(
-  //   (single) => single.artists.length > 1
-  // );
-
-  console.log("Original Album Count: ", items.length);
-
   const removedCompilations = items.filter(
     (item) => item.album_type !== "compilation"
   );
 
-  console.log(
-    "Album Count aftering removing Compilations: ",
-    removedCompilations.length
-  );
-  const removedVariousArtists = removedCompilations.filter(
-    (item) => item.artists[0].name !== "Various Artists"
-  );
-
-  console.log(
-    "Album Count aftering removing Various Artists: ",
-    removedVariousArtists.length
-  );
+  // const removedVariousArtists = removedCompilations.filter(
+  //   (item) => item.artists[0].name !== "Various Artists"
+  // );
 
   const removingAlbumsMadeByOriginalArtist: Item[] = [];
 
-  removedVariousArtists.map((album) => {
+  removedCompilations.map((album) => {
     if (album.artists.length > 1) {
       removingAlbumsMadeByOriginalArtist.push(album);
     } else if (album.artists[0].id !== originalArtist) {
@@ -237,8 +218,6 @@ export const filterAlbums = (items: Item[], originalArtist: string): Item[] => {
       console.log("Duplicate Album: ", album.name);
     }
   });
-
-  console.log("Test Count: ", removingAlbumsMadeByOriginalArtist.length);
 
   return test2.filter(
     (item) => !item.name.toLowerCase().includes("instrumental")

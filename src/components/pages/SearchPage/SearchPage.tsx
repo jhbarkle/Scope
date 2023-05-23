@@ -34,7 +34,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
   >([]);
 
   useEffect(() => {
-    // Get Tracks from Artist Albums
+    // Get Full Albums with Tracks from Artist
     const getAllConnectedArtist = async (albums: any) => {
       setLoadingMessage(
         `Getting all tracks for ${searchState.searchQueryFromUser}...`
