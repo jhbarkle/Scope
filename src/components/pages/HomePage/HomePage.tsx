@@ -20,7 +20,7 @@ import { SearchState, defaultSearchState } from "../../../models/SearchState";
 const errorDebugLogString = "❌==========Error==========❌";
 
 const HomePage = () => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [user, setUser] = useState<UserProfile>(initialUserProfile);
   const [searchState, setSearchState] =
@@ -90,7 +90,7 @@ const HomePage = () => {
         });
     };
 
-    fetchProfileData();
+    // fetchProfileData();
   }, []);
 
   if (isError) {
@@ -110,31 +110,11 @@ const HomePage = () => {
   ) : (
     // No error and not loading
     <div id={styles.home_wrapper}>
-      {/* Search Bar */}
-      <SearchBar searchState={searchState} setSearchState={setSearchState} />
-      {/* User Profile Info */}
-      <Profile profile={user} />
-      {/* Followed Artists */}
-      <Category
-        title={"Followed Artists"}
-        description={"Check out your favorite artists"}
-        spotifyItems={user.followedArtists}
-      />
-      {/* Top Artists */}
-      <FilterableCategory
-        title={"Top Artists"}
-        description={"Check out your top Artits from different points in time."}
-        filterableCategoryItems={user.topArtists}
-      />
-
-      {/* Top Tracks */}
-
-      <FilterableCategory
-        title={"Top Tracks"}
-        description={"Check out your top Tracks from different points in time."}
-        filterableCategoryItems={user.topTracks}
-      />
-      <section id={styles.aside_content}></section>
+      <nav id={styles.navbar}></nav>
+      <section id={styles.main}>left</section>
+      <aside id={styles.creation_station}>
+        <div id={styles.sticky}>Sticky</div>
+      </aside>
     </div>
   );
 };
