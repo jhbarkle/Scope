@@ -19,12 +19,15 @@ import { SearchState, defaultSearchState } from "../../../models/SearchState";
 
 const errorDebugLogString = "❌==========Error==========❌";
 
+export type Category = "You" | "Discover" | "Search" | "Genres";
+
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [user, setUser] = useState<UserProfile>(initialUserProfile);
   const [searchState, setSearchState] =
     useState<SearchState>(defaultSearchState);
+  const [category, setCategory] = useState<Category>("You");
 
   useEffect(() => {
     // Fetch User's Followed Artists, Top Artists, and Top Tracks from Spotify
@@ -111,7 +114,9 @@ const HomePage = () => {
     // No error and not loading
     <div id={styles.home_wrapper}>
       <nav id={styles.navbar}></nav>
-      <section id={styles.main}>left</section>
+      <section id={styles.main}>
+        <Profile profile={user} setCategory={setCategory} category={category} />
+      </section>
       <aside id={styles.creation_station}>
         <div id={styles.sticky}>Sticky</div>
       </aside>

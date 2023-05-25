@@ -1,7 +1,7 @@
 import { UserProfile } from "../../../models/UserProfile";
 
 export const initialUserProfile: UserProfile = {
-  displayName: "",
+  displayName: "Anon",
   email: "",
   followers: 0,
   href: "",
