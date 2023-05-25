@@ -10,7 +10,7 @@
 #main {
   background-color: $background-light;
   min-height: 99.4vh;
-  max-width: 70vw;
+  max-width: 69vw;
   flex-grow: 3;
 }
 
@@ -21,8 +21,6 @@
 
 #sticky {
   top: 60px;
-  min-height: 100vh;
-  width: 100%;
+  max-width: 32vw;
   position: fixed;
-  background-color: $background-dark;
 }

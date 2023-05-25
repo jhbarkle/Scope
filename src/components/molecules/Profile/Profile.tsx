@@ -1,5 +1,6 @@
 import { UserProfile } from "../../../models/UserProfile";
-import { Category } from "../../pages/HomePage/HomePage";
+import { Category } from "../../../types";
+
 import styles from "./Profile.module.scss";
 
 interface ProfileProps {

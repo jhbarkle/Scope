@@ -11,18 +11,18 @@ import { UserProfile } from "../../../models/UserProfile";
 import { initialUserProfile } from "./HomePage.helpers";
 import GenericError from "../../molecules/GenericError/GenericError";
 import Profile from "../../molecules/Profile/Profile";
-import Category from "../../molecules/Category/Category";
-import FilterableCategory from "../../molecules/FilterableCategory/FilterableCategory";
-import SearchBar from "../../molecules/SearchBar/SearchBar";
 import SearchPage from "../SearchPage/SearchPage";
 import { SearchState, defaultSearchState } from "../../../models/SearchState";
+import { Category } from "../../../types";
+import CategorySection from "../../organisms/CategorySection/CategorySection";
+import LoadingIndicator from "../../atoms/LoadingIndicator/LoadingIndicator";
+import CreationStation from "../../organisms/CreationStation/CreationStation";
 
 const errorDebugLogString = "❌==========Error==========❌";
 
-export type Category = "You" | "Discover" | "Search" | "Genres";
-
 const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Loading...");
   const [isError, setIsError] = useState(false);
   const [user, setUser] = useState<UserProfile>(initialUserProfile);
   const [searchState, setSearchState] =
@@ -33,9 +33,7 @@ const HomePage = () => {
     // Fetch User's Followed Artists, Top Artists, and Top Tracks from Spotify
     const fetchUsersSpotifyData = async (profile: UserProfile) => {
       try {
-        console.log(
-          " ➡️ Fetching User's Followed Artists, Top Artists, and Top Tracks from Spotify..."
-        );
+        setLoadingMessage("Fetching Your Spotify Data...");
         const [
           followedArtists,
           shortTimeRangeTopArtists,
@@ -72,6 +70,7 @@ const HomePage = () => {
           " ✅ Successfully Updated User's Top Artists/Tracks and Followed Artist"
         );
         setIsLoading(false);
+        setLoadingMessage("");
       } catch (error) {
         console.log(errorDebugLogString, error);
         setIsError(true);
@@ -83,6 +82,7 @@ const HomePage = () => {
       await authorizeAndGatherUserData();
 
       // Fetch User's Profile from Spotify
+      setLoadingMessage("Fetching Your Profile from Spotify...");
       await fetchProfile()
         .then(async (profile) => {
           await fetchUsersSpotifyData(profile);
@@ -107,18 +107,19 @@ const HomePage = () => {
   }
 
   return isLoading ? (
-    <div id={styles.loading}>
-      <img src="/loading.gif" alt="Loading" />
-    </div>
+    <LoadingIndicator loadingMessage={loadingMessage} />
   ) : (
     // No error and not loading
     <div id={styles.home_wrapper}>
       <nav id={styles.navbar}></nav>
       <section id={styles.main}>
         <Profile profile={user} setCategory={setCategory} category={category} />
+        <CategorySection category={category} />
       </section>
       <aside id={styles.creation_station}>
-        <div id={styles.sticky}>Sticky</div>
+        <div id={styles.sticky}>
+          <CreationStation />
+        </div>
       </aside>
     </div>
   );
