@@ -55,9 +55,9 @@ const FilterableCategory: React.FC<FilterableCategoryProps> = ({
 
   const getActiveButton = (state: FilterableCategoryState) => {
     if (state === filter) {
-      return styles.active_button;
+      return styles.active;
     } else {
-      return styles.inactive_button;
+      return styles.inactive;
     }
   };
 

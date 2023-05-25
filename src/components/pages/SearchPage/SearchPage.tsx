@@ -74,7 +74,7 @@ const SearchPage: React.FC<SearchPageProps> = ({
       setSearchState({ ...searchState, isLoading: false });
     };
 
-    fetchSearchResults();
+    // fetchSearchResults();
   }, []);
   return isLoading ? (
     <div id={styles.loading}>

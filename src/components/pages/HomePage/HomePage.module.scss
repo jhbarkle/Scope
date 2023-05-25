@@ -1,10 +1,26 @@
+@import "../../../styles/variables.scss";
+
 #home_wrapper {
   margin-top: 60px;
-  background-color: #d6d1d1;
-  height: fit-content;
-  padding: 50px;
-
+  background-color: $background-dark;
   display: flex;
-  flex-direction: column;
-  gap: 50px;
+  flex-direction: row;
+}
+
+#main {
+  background-color: $background-light;
+  min-height: 99.4vh;
+  max-width: 69vw;
+  flex-grow: 3;
+}
+
+#creation_station {
+  height: 500px;
+  flex-grow: 1.5;
+}
+
+#sticky {
+  top: 60px;
+  max-width: 32vw;
+  position: fixed;
 }
